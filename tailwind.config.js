@@ -1,0 +1,55 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: 'class',
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        faso: {
+          bg: '#0F1C2E',
+          'bg-light': '#F4F7FB',
+          'sidebar-start': '#0F1C2E',
+          'sidebar-end': '#123B2F',
+          primary: '#1E7F3C',
+          'primary-hover': '#17652F',
+          'primary-active': '#0F4F23',
+          secondary: '#C60C30',
+          'secondary-hover': '#A30A28',
+          accent: '#FCD116',
+          'text-primary': '#0B1624',
+          'text-secondary': '#5B6B7C',
+          'text-300': '#9CA3AF',
+          'text-400': '#6B7280',
+          'text-500': '#5B6B7C',
+          'text-600': '#4B5563',
+          'text-700': '#374151',
+          'text-800': '#1F2937',
+          'text-900': '#0B1624',
+          border: '#E3E8EF',
+          card: '#FFFFFF',
+          'hover-bg': '#F0F4F8',
+          'statut-valide': '#1E7F3C',
+          'statut-valide-bg': '#E6F4EA',
+          'statut-attente': '#B58100',
+          'statut-attente-bg': '#FFF4D6',
+          'statut-rejete': '#C60C30',
+          'statut-rejete-bg': '#FDEAEA',
+          'statut-brouillon': '#5B6B7C',
+          'statut-brouillon-bg': '#E8EEF5',
+        },
+      },
+      boxShadow: {
+        'card': '0 4px 12px rgba(0,0,0,0.05)',
+        'nav-active': '0 4px 14px rgba(30,127,60,0.25)',
+      },
+      borderRadius: {
+        'faso': '8px',
+        'faso-lg': '12px',
+      },
+    },
+  },
+  plugins: [],
+};

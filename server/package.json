@@ -1,0 +1,36 @@
+{
+  "name": "fasomarches-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "prisma generate || exit 0",
+    "dev": "nodemon --watch src --ext js --exec node src/index.js",
+    "start": "node src/index.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "node prisma/seed.js",
+    "db:import-mercurial": "node scripts/import-mercurial.js",
+    "db:verify-mercurial": "node scripts/verify-import.js",
+    "db:fix-mercuriale-prices": "node scripts/fix-mercuriale-prices.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.11.0",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "prisma": "^5.22.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
