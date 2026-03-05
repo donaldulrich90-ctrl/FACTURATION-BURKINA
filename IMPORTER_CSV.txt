@@ -1,0 +1,30 @@
+============================================
+  Comment importer un fichier CSV (mercuriale)
+============================================
+
+1) Se connecter en tant qu'administrateur
+   - Email : admin@plateforme.com
+   - Mot de passe : admin123
+
+2) Aller dans l'onglet "Mercuriales par région"
+   (à côté de "Entreprises & abonnements")
+
+3) Choisir une région
+   - Chaque région a un bouton "Importer des articles"
+   - Cliquer sur "Importer des articles" pour la région voulue
+     (ex. Ouagadougou (Ville), Centre, Sahel, etc.)
+
+4) Sélectionner le fichier CSV
+   - Format : Code ; Désignation/Caractéristiques ; Conditionnement ; Minimum ; Moyen ; Maximum ; Catégorie
+   - Séparateur : point-virgule (;) ou virgule (,)
+   - Lignes sans conditionnement ni prix = catégories (affichées en vert)
+
+5) Fichier d'exemple
+   - Un fichier exemple_mercuriale_import.csv est dans ce dossier
+   - Vous pouvez aussi cliquer sur "Télécharger un modèle CSV" sur la page admin
+     pour obtenir un modèle à remplir
+
+6) Après l'import
+   - Les articles sont ajoutés à la mercuriale de la région choisie
+   - Les entreprises voient les nouveaux articles en choisissant cette région
+     sur la page Mercuriale (dans leur application)

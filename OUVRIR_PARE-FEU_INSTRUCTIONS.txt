@@ -1,0 +1,40 @@
+========================================
+  OUVERTURE DU PORT 3001 - PARE-FEU WINDOWS
+  (À faire UNE SEULE FOIS)
+========================================
+
+MÉTHODE 1 - Script (le plus simple)
+-----------------------------------
+1. Dans l'Explorateur, allez dans le dossier FACTURATION
+2. Trouvez le fichier : CORRIGER_ACCES_INTERNET.bat
+3. CLIC DROIT sur ce fichier (pas double-clic !)
+4. Cliquez sur "Exécuter en tant qu'administrateur"
+5. Une fenêtre bleue peut demander "Voulez-vous autoriser..." → Cliquez OUI
+6. Attendez le message "Règle pare-feu ajoutée avec succès"
+
+
+MÉTHODE 2 - Ligne de commande
+-----------------------------------
+1. Appuyez sur Touche Windows
+2. Tapez : powershell
+3. CLIC DROIT sur "Windows PowerShell"
+4. Cliquez "Exécuter en tant qu'administrateur"
+5. Copiez-collez cette commande puis Entrée :
+
+netsh advfirewall firewall add rule name="FasoMarches Port 3001" dir=in action=allow protocol=TCP localport=3001
+
+6. Si tout va bien, aucun message d'erreur n'apparaît
+
+
+========================================
+  SOLUTION ALTERNATIVE - TUNNEL (sans pare-feu)
+========================================
+
+Si le pare-feu pose toujours problème, utilisez le TUNNEL :
+
+1. Lancez LANCER_PRODUCTION.bat (attendez que le serveur démarre)
+2. Lancez LANCER_AVEC_TUNNEL.bat
+3. Une URL s'affichera (ex: https://xxx-xxx-xxx.loca.lt)
+4. Partagez cette URL pour l'accès Internet
+
+Avantage : Aucune configuration pare-feu ou routeur nécessaire !

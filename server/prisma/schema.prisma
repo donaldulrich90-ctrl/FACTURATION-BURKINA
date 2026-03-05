@@ -1,0 +1,349 @@
+// FasoMarchés - Base QSL (Quittances)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  phone         String?
+  ifu           String?  // 10 chiffres (émetteur)
+  rccm          String?
+  address       String?
+  regimeFiscal  String?  // Régime fiscal (RS, RSI, etc.)
+  contact       String?  // Contact émetteur (téléphone, email)
+  gerant        String?  // Nom du gérant / responsable
+  logoUrl       String?  // URL ou chemin du logo
+  signatureUrl  String?  // Image de la signature (base64 ou URL)
+  cachetUrl     String?  // Image du cachet (base64 ou URL)
+  website       String?  // Site web de l'entreprise
+  createdAt     DateTime @default(now())
+
+  users        User[]
+  subscriptions Subscription[]
+  factures     Facture[]
+  quittances   Quittance[]
+  marches         Marche[]
+  marcheArchives  MarcheArchive[]
+  mercurialeArticles MercurialeArticle[]
+  mercurialePdfs     MercurialePdf[]
+  simulations  MarcheSimulation[]
+  clients      Client[]
+  announcements Announcement[]
+}
+
+// Annonces et alertes du gérant (visible à tous les utilisateurs de l'entreprise)
+model Announcement {
+  id          String   @id @default(cuid())
+  companyId   String
+  title       String
+  content     String
+  type        String   @default("info") // info = annonce normale, alerte = journal/alerte visible par tous
+  createdById String
+  createdAt   DateTime @default(now())
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdBy User    @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+// Clients / collaborateurs : entreprises ou entités auxquelles on facture (carnet d'adresses)
+model Client {
+  id          String   @id @default(cuid())
+  companyId   String   // Entreprise émettrice (propriétaire du carnet)
+  name        String   // Raison sociale / nom du client
+  direction   String?  // DAF, PRM, etc.
+  ifu         String?
+  rccm        String?
+  address     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, name])
+  @@index([companyId])
+}
+
+// Marchés exécutés archivés en ligne (documents scannés)
+model MarcheArchive {
+  id           String   @id @default(cuid())
+  companyId    String
+  reference    String   // N° marché / contrat
+  titre        String   // Objet du marché
+  entite       String?  // Donneur d'ordre
+  dateDebut    DateTime?
+  dateFin      DateTime?
+  montant      Int?     // Montant exécuté FCFA
+  remarques    String?
+  createdAt    DateTime @default(now())
+
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  documents MarcheArchiveDocument[]
+}
+
+model MarcheArchiveDocument {
+  id              String   @id @default(cuid())
+  marcheArchiveId String
+  fileName        String   // Nom original
+  filePath        String   // Chemin sur le serveur
+  fileSize        Int?     // Taille en octets
+  contentType     String?  // application/pdf, image/jpeg, etc.
+  createdAt       DateTime @default(now())
+
+  archive MarcheArchive @relation(fields: [marcheArchiveId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?  // Téléphone pour appels
+  role          String   // super_admin, company_admin, company_user
+  companyId     String?
+  assignedTasks String?  // JSON array: ["facturation","rh",...] tâches/modules assignés
+  createdAt     DateTime @default(now())
+
+  company   Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  factures  Facture[]
+  quittances Quittance[]
+  chatSent  ChatMessage[] @relation("ChatSender")
+  chatReceived ChatMessage[] @relation("ChatReceiver")
+  announcements Announcement[]
+}
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  companyId   String   // Canal par entreprise
+  senderId    String
+  receiverId  String?  // null = message groupe entreprise
+  content     String
+  type        String   @default("text") // text, file, call_invite
+  metadata    String?  // JSON pour pièces jointes, etc.
+  createdAt   DateTime @default(now())
+
+  sender    User   @relation("ChatSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver  User?  @relation("ChatReceiver", fields: [receiverId], references: [id], onDelete: SetNull)
+}
+
+model Subscription {
+  id          String   @id @default(cuid())
+  companyId   String   @unique
+  planName    String   @default("Standard")
+  planType    String   @default("standard") // code du forfait (ex: gratuit, standard, pro)
+  startDate   DateTime
+  endDate     DateTime
+  status      String   @default("active") // active, expired, cancelled
+  price       String?  @default("250 000 FCFA/an")
+  priceAmount Int?     // montant en FCFA pour calcul des gains
+  features    String?  // JSON array des fonctionnalités incluses dans le forfait
+  createdAt   DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+// Types d'abonnement paramétrables par l'administrateur général
+model SubscriptionPlan {
+  id          String   @id @default(cuid())
+  planType    String   @unique // code unique (gratuit, standard, pro, etc.)
+  planName    String   // libellé affiché
+  price       String?  // ex: "250 000 FCFA/an"
+  priceAmount Int      @default(0) // montant numérique pour calculs
+  features    String?  // JSON array des codes fonctionnalités
+  displayOrder Int     @default(0) // ordre d'affichage
+  createdAt   DateTime @default(now())
+}
+
+model Region {
+  id       String   @id
+  nom      String
+  chefLieu String
+
+  mercurialeArticles MercurialeArticle[]
+  mercurialePdfs     MercurialePdf[]
+  marches            Marche[]
+}
+
+model MercurialeArticle {
+  id            String   @id @default(cuid())
+  code          String
+  designation   String
+  conditionnement String  @default("Unité")
+  categorie     String?
+  type          String   @default("article") // category, article
+  prix_min      Int?
+  prix_moyen    Int?
+  prix_max      Int?
+  regionId      String
+  companyId     String   // "template" = référence, ou id entreprise
+  createdAt     DateTime @default(now())
+
+  region  Region  @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([code, conditionnement, regionId, companyId])
+  @@index([regionId, companyId])
+}
+
+model MercurialePdf {
+  id        String   @id @default(cuid())
+  regionId  String
+  companyId String   // "template" ou id entreprise
+  fileName  String
+  filePath  String?  // chemin côté serveur ou stockage
+  createdAt DateTime @default(now())
+
+  region  Region  @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([regionId, companyId])
+}
+
+// Marché public : chaque marché a ses propres dépenses pour calculer la marge bénéficiaire
+model Marche {
+  id            String   @id @default(cuid())
+  reference     String   // ex: DAO-2024-054
+  titre         String
+  entite        String?  // donneur d'ordre (ministère, SONABEL, etc.)
+  budgetEstime  Int?     // montant estimé du marché en FCFA
+  regionId      String?
+  statut        String   @default("prospective") // prospective, en_cours, execute, abandonne
+  companyId     String
+  daoFileName   String?  // nom du fichier DAO téléversé (Dossier d'Appel d'Offres)
+  daoFilePath   String?  // chemin du fichier sur le serveur
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  company   Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  region    Region?         @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  depenses    MarcheDepense[]
+  factures    Facture[]
+  simulation  MarcheSimulation?
+}
+
+model MarcheSimulation {
+  id                   String   @id @default(cuid())
+  reference            String?
+  titre                String
+  entite               String?
+  budgetEnvelope       Int?
+  enregistrementPercent Float?  // % de l'enveloppe pour l'enregistrement du marché
+  depensesJson         String? // JSON [{ libelle, montant }] - dépenses manuelles
+  totalDepenses        Int      @default(0)   // calculé: enregistrement + somme dépenses
+  companyId            String
+  marcheId             String?  @unique
+  status               String   @default("brouillon")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  marche    Marche? @relation(fields: [marcheId], references: [id], onDelete: SetNull)
+  articles  MarcheSimulationArticle[]
+}
+
+model MarcheSimulationArticle {
+  id          String   @id @default(cuid())
+  simulationId String
+  designation String
+  quantity    Int      @default(1)
+  prixAchat   Int      // prix d'achat fournisseur
+  prixVente   Int      // prix facturé (facture soumise)
+  createdAt   DateTime @default(now())
+
+  simulation MarcheSimulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+}
+
+model MarcheDepense {
+  id        String   @id @default(cuid())
+  marcheId  String
+  type      String   // enregistrement, timbres, papiers_admin, documents_joindre, autre
+  libelle   String
+  montant   Int      // en FCFA
+  dateDepense DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  marche Marche @relation(fields: [marcheId], references: [id], onDelete: Cascade)
+}
+
+model Facture {
+  id              String   @id @default(cuid())
+  numero          String   @unique
+  type            String   @default("proforma") // proforma | definitive | bl
+  sourceDocumentId String? // Proforma → Définitive (source=proforma) ; Définitive → BL (source=definitive)
+  client          String
+  clientDirection String?  // DAF, PRM, etc.
+  clientIfu       String?
+  clientRccm      String?
+  clientAddr      String?
+  marcheNumero    String?  // N° Marché/Contrat
+  objetMarche     String?  // Objet du marché
+  numBonCommande  String?  // N° Bon de Commande
+  dateFacture     DateTime @default(now())
+  totalHT         Int
+  tva             Int      @default(0)
+  airsiTaux       Int      @default(0)  // 0, 2 ou 5 (%)
+  airsi           Int      @default(0)  // Montant AIRSI
+  totalTTC        Int
+  netAPayer       Int?     // Net à payer (TTC - AIRSI)
+  statut          String   @default("brouillon")
+  companyId       String
+  userId          String
+  marcheId        String?
+  createdAt       DateTime @default(now())
+  // FEC - Facture Électronique Certifiée (DGI)
+  fecUuid         String?  @unique // UUID pour certification
+  fecQrData       String?  // Données QR Code DGI
+  fecHash         String?  // Empreinte de vérification
+
+  company         Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  marche          Marche?       @relation(fields: [marcheId], references: [id], onDelete: SetNull)
+  items           FactureItem[]
+  quittance       Quittance?
+  sourceDocument  Facture?      @relation("DocumentChain", fields: [sourceDocumentId], references: [id], onDelete: SetNull)
+  documentsDerives Facture[]   @relation("DocumentChain")
+}
+
+model FactureItem {
+  id          String   @id @default(cuid())
+  code        String?  // Réf mercuriale (ex: 03.1.1.1.1.0.001)
+  designation String
+  quantity    Int      @default(1)
+  qMin        Int?     // Quantité minimale (factures de commande)
+  qMax        Int?     // Quantité maximale (factures de commande)
+  unite       String?  @default("U")  // U, Lot, Forfait
+  priceUnit   Int
+  total       Int
+  factureId   String
+  createdAt   DateTime @default(now())
+
+  facture Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+}
+
+// QSL - Quittance (coeur du système)
+model Quittance {
+  id              String   @id @default(cuid())
+  numero          String   @unique
+  factureId       String   @unique
+  datePaiement    DateTime
+  montant         Int
+  modePaiement    String   // virement, especes, cheque, autre
+  referenceBancaire String?
+  remarques       String?
+  statut          String   @default("emise") // emise, validee
+  companyId       String
+  userId          String   // créée par
+  createdAt       DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facture Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+}
