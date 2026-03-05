@@ -7,7 +7,7 @@
     "dev": "concurrently -n api,vite -c blue,green \"npm run dev:server\" \"vite\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "vite",
-    "build": "npx vite build",
+    "build": "node ./node_modules/vite/bin/vite.js build",
     "build:render": "npm install && npm run build && cd server && npm install && node ./node_modules/prisma/build/index.js generate && node ./node_modules/prisma/build/index.js db push",
     "start": "npm run build && cd server && node src/index.js",
     "preview": "vite preview",
