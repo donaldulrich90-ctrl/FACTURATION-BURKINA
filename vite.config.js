@@ -13,8 +13,8 @@ export default defineConfig({
         overrideManifestIcons: true
       },
       manifest: {
-        name: 'Alliance des Etats du Sahel Marché Pro',
-        short_name: 'Alliance des Etats du Sahel Marché Pro',
+        name: 'A.E.S Marché Pro',
+        short_name: 'A.E.S',
         description: 'Plateforme de Marchés Publics - Burkina Faso',
         theme_color: '#0F1C2E',
         background_color: '#ffffff',
