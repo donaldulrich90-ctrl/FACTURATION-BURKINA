@@ -3756,7 +3756,7 @@ export default function Facturation() {
             <button className="text-faso-text-secondary p-2 -ml-2 hover:bg-faso-hover-bg rounded-faso shrink-0" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? <X /> : <Menu />}
             </button>
-            <span className="ml-1 sm:ml-2 font-bold text-faso-text-primary text-sm sm:text-base truncate">Burkina Marchés Pro</span>
+            <span className="ml-1 sm:ml-2 font-bold text-faso-text-primary text-sm sm:text-base truncate">Alliance des Etats du Sahel Marché Pro</span>
           </div>
           <h2 className="hidden md:block text-lg medium text-faso-text-secondary flex-1 min-w-0 truncate">
             {activeTab === 'dashboard' && "Vue d'ensemble"}

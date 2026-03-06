@@ -24,14 +24,14 @@ export default function BrandingBlock({ variant = 'full', showFooter = true }) {
             : 'text-[28px] md:text-[42px] tracking-[1px] mb-5'
         }`}
       >
-        BURKINA MARCHÉS PRO
+        ALLIANCE DES ETATS DU SAHEL MARCHE PRO
       </h1>
 
       {/* 2. Logo */}
       <div className="flex justify-center">
         <img
           src="/logo-burkina-marches.png"
-          alt="Burkina Marchés Pro"
+          alt="Alliance des Etats du Sahel Marché Pro"
           className={`object-contain object-center ${
             isCompact
               ? 'w-[140px] md:w-[180px] h-auto'
