@@ -16,22 +16,29 @@ export default function BrandingBlock({ variant = 'full', showFooter = true }) {
 
   return (
     <div className={`flex flex-col items-center ${isCompact ? 'text-center' : ''}`}>
-      {/* 1. Titre principal (au-dessus du logo) */}
-      <h1
-        className={`font-extrabold text-white text-center leading-tight ${
-          isCompact
-            ? 'text-lg md:text-xl tracking-wide mb-2'
-            : 'text-[28px] md:text-[42px] tracking-[1px] mb-5'
-        }`}
-      >
-        ALLIANCE DES ETATS DU SAHEL MARCHE PRO
-      </h1>
+      {/* 1. Titre principal avec drapeau AES (au-dessus du logo) */}
+      <div className={`flex items-center justify-center gap-2 ${isCompact ? 'mb-2' : 'mb-5'}`}>
+        <img
+          src="/flag-aes.png"
+          alt="Drapeau AES"
+          className={isCompact ? 'w-8 h-5 object-contain rounded-sm' : 'w-12 h-8 object-contain rounded-sm'}
+        />
+        <h1
+          className={`font-extrabold text-white text-center leading-tight ${
+            isCompact
+              ? 'text-lg md:text-xl tracking-wide'
+              : 'text-[28px] md:text-[42px] tracking-[1px]'
+          }`}
+        >
+          A.E.S
+        </h1>
+      </div>
 
       {/* 2. Logo */}
       <div className="flex justify-center">
         <img
           src="/logo-burkina-marches.png"
-          alt="Alliance des Etats du Sahel Marché Pro"
+          alt="A.E.S Marché Pro"
           className={`object-contain object-center ${
             isCompact
               ? 'w-[140px] md:w-[180px] h-auto'
