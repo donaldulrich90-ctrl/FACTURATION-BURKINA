@@ -21,7 +21,7 @@ Pour partager un **lien** permettant de tester l’application en ligne, vous po
    - **Root Directory** : laisser vide (racine du projet)
    - **Runtime** : `Node`
    - **Build Command** :  
-     `npm install && npm run build && cd server && npm install && npx prisma generate`
+     `npm install && npm run build && cd server && npm install && npm run db:deploy`
    - **Start Command** :  
      `cd server && node src/index.js`
    - **Variables d’environnement** (Environment) :

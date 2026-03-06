@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, LogIn, Loader2, CheckCircle, XCircle, Moon, Sun } from 'lucide-react';
+import { Lock, Mail, LogIn, Loader2, XCircle, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { api } from '../api/client';
@@ -94,12 +94,6 @@ export default function Login() {
                     </button>
                   </div>
                 </div>
-              </div>
-            )}
-          {!checkingServer && serverReady && (
-              <div className="mb-5 p-3 bg-faso-statut-valide-bg border border-faso-statut-valide/50 rounded-faso-lg flex items-center gap-2">
-                <CheckCircle className="text-faso-statut-valide" size={20} />
-                <span className="text-faso-statut-valide text-sm font-medium">Serveur prêt — Connexion possible</span>
               </div>
             )}
           <form onSubmit={handleSubmit} className="space-y-5">
