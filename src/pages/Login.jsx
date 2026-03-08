@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { api } from '../api/client';
 import BrandingBlock, { BrandingFooter } from '../components/BrandingBlock';
+import AssistantWidgetPublic from '../components/AssistantWidgetPublic';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -149,6 +150,7 @@ export default function Login() {
           <BrandingFooter />
         </div>
       </div>
+      <AssistantWidgetPublic />
     </div>
   );
 }

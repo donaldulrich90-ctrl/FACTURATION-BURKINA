@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import PwaInstallBanner from './components/PwaInstallBanner';
+import AssistantWidget from './components/AssistantWidget';
 
 const Login = lazy(() => import('./pages/Login'));
 const SuperAdmin = lazy(() => import('./pages/SuperAdmin'));
@@ -96,6 +97,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      <AssistantWidget />
     </BrowserRouter>
   );
 }

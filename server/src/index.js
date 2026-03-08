@@ -30,6 +30,7 @@ import simulationsRoutes from './routes/simulations.js';
 import appelsOffresRoutes from './routes/appelsOffres.js';
 import chatRoutes from './routes/chat.js';
 import announcementsRoutes from './routes/announcements.js';
+import assistantRoutes from './routes/assistant.js';
 import { initSocket } from './socket.js';
 
 const app = express();
@@ -48,6 +49,15 @@ app.use('/api', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   message: { error: 'Trop de requêtes. Réessayez dans quelques minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
+
+// Rate limiting assistant public (10 req/15 min par IP, pour prospects)
+app.use('/api/assistant/public', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Trop de requêtes. Réessayez dans 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
 }));
@@ -80,6 +90,7 @@ app.use('/api/simulations', simulationsRoutes);
 app.use('/api/appels-offres', appelsOffresRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/announcements', announcementsRoutes);
+app.use('/api/assistant', assistantRoutes);
 
 // 404 pour les routes API non trouvées (après toutes les routes connues)
 app.use('/api', (req, res) => {

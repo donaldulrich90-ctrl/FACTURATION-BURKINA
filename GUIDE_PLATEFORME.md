@@ -158,6 +158,17 @@ Si le serveur n'est pas accessible, l'application fonctionne en **mode démo** a
 
 ---
 
+## Assistant IA
+
+Un assistant virtuel (chatbot) répond aux questions des utilisateurs et les guide dans l'utilisation de la plateforme :
+
+- **Page de connexion** : pour les prospects qui veulent découvrir FasoMarchés
+- **Une fois connecté** : pour guider les utilisateurs dans leurs tâches
+
+**Activation :** Ajoutez `OPENAI_API_KEY` dans `server/.env` (clé créée sur https://platform.openai.com/api-keys). Sans clé, un message invitera à consulter le guide.
+
+---
+
 ## PWA (Progressive Web App)
 
 La plateforme est installable comme une application sur mobile ou bureau. Un bandeau propose l'installation lorsque les conditions sont remplies.

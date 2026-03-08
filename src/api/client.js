@@ -465,6 +465,22 @@ export const api = {
     const data = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(data.error || `Erreur ${r.status}`);
   },
+  async postAssistantMessage(message, history = [], isPublic = false) {
+    const url = isPublic ? `${API_BASE}/assistant/public` : `${API_BASE}/assistant`;
+    const headers = isPublic ? { 'Content-Type': 'application/json' } : getHeaders();
+    const r = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ message, history }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      const err = new Error(data.error || `Erreur ${r.status}`);
+      if (data.fallback) err.fallback = true;
+      throw err;
+    }
+    return data;
+  },
   async patchSubscription(id, data) {
     const r = await fetch(`${API_BASE}/subscriptions/${id}`, {
       method: 'PATCH',

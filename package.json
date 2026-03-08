@@ -12,7 +12,8 @@
     "start": "npm run build && cd server && node src/index.js",
     "preview": "vite preview",
     "postinstall": "node scripts/copy-pdf-worker.cjs",
-    "guide:pdf": "npx --yes md-to-pdf DEPLOIEMENT_MIKROTIK.md"
+    "guide:pdf": "npx --yes md-to-pdf GUIDE_ENTREPRISES.md -o GUIDE_ENTREPRISES.pdf",
+    "guide:ouvrir": "start GUIDE_ENTREPRISES.html"
   },
   "dependencies": {
     "html2canvas": "^1.4.1",

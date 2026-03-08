@@ -251,6 +251,12 @@ Chaque utilisateur peut modifier son propre mot de passe : cliquez sur l'icône 
 
 ---
 
+## Assistant virtuel
+
+Un **assistant IA** (icône robot en bas à droite) répond à vos questions sur la plateforme et vous guide pas à pas. Posez-lui vos questions à tout moment.
+
+---
+
 ## Besoin d'aide ?
 
 Contactez votre administrateur ou le support technique de la plateforme pour toute question ou problème d’accès.
