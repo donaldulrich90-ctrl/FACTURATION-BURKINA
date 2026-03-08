@@ -32,5 +32,8 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Outils externes (volumineux)
+cloudflared.exe
+
 # Prisma
 server/node_modules/.prisma/
