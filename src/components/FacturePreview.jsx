@@ -53,15 +53,17 @@ export default function FacturePreview({
     const originalNext = el.nextElementSibling;
     const printWrap = document.createElement('div');
     printWrap.id = 'facture-print-wrapper';
-    printWrap.style.cssText = 'width:100%;max-width:100%;';
+    printWrap.style.cssText = 'width:100%;max-width:100%;overflow:hidden;scrollbar-width:none;';
     document.body.prepend(printWrap);
     printWrap.appendChild(el);
+    document.documentElement.classList.add('print-facture');
     document.body.classList.add('print-facture');
     window.print();
     const cleanup = () => {
       printWrap.removeChild(el);
       originalParent.insertBefore(el, originalNext);
       printWrap.remove();
+      document.documentElement.classList.remove('print-facture');
       document.body.classList.remove('print-facture');
       window.removeEventListener('afterprint', cleanup);
     };
@@ -95,6 +97,12 @@ export default function FacturePreview({
   const palette = PALETTES[theme?.palette] || PALETTES.bleu;
   const fontFamily = FONTS[theme?.font] || FONTS.sans;
   const showWatermark = theme?.watermark !== false;
+  const LOGO_SIZES = {
+    small: { maxWidth: '85mm', width: '35%', minHeight: '85px' },
+    medium: { maxWidth: '105mm', width: '42%', minHeight: '105px' },
+    large: { maxWidth: '130mm', width: '55%', minHeight: '130px' },
+  };
+  const logoSize = LOGO_SIZES[theme?.logoSize] || LOGO_SIZES.large;
 
   const hasMarcheRef = marche && (marche.numero || marche.objet || marche.bonCommande);
 
@@ -111,7 +119,7 @@ export default function FacturePreview({
       <div
         ref={exportRef}
         id="facture-print"
-        className="relative p-12 min-h-[297mm] flex flex-col overflow-hidden shrink-0"
+        className="relative p-12 min-h-[297mm] flex flex-col shrink-0 overflow-x-hidden"
         style={{ width: '210mm', minWidth: '210mm', minHeight: '297mm', maxWidth: '100%', boxSizing: 'border-box' }}
       >
         {/* Logo en filigrane (watermark) - discret pour ne pas masquer le contenu */}
@@ -135,10 +143,11 @@ export default function FacturePreview({
         <div className="flex justify-between items-stretch gap-4 sm:gap-6 border-b border-slate-200 pb-8 mb-6 min-w-0">
           <div
             data-facture-logo-box
-            className="flex items-center justify-center overflow-hidden shrink-0 rounded-2xl border border-slate-200 bg-white self-stretch min-h-[80px]"
+            className="flex items-center justify-center overflow-hidden shrink-0 rounded-2xl border border-slate-200 bg-white self-stretch"
             style={{
-              maxWidth: '80mm',
-              width: '35%',
+              maxWidth: logoSize.maxWidth,
+              width: logoSize.width,
+              minHeight: logoSize.minHeight,
               boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
             }}
           >
@@ -168,8 +177,8 @@ export default function FacturePreview({
           </div>
         </div>
 
-        {/* Bandeau titre - pleine largeur, jamais de troncation (FACTURE, PROFORMA, etc.) */}
-        <div data-facture-bandeau className="py-3 px-6 -mx-12 mb-6 shrink-0 overflow-visible" style={{ backgroundColor: palette.light }}>
+        {/* Bandeau titre - pleine largeur (FACTURE, PROFORMA, etc.) */}
+        <div data-facture-bandeau className="py-3 px-6 -mx-12 mb-6 shrink-0" style={{ backgroundColor: palette.light }}>
           <h1 className="text-xl font-bold tracking-wide overflow-visible" style={{ color: palette.text }}>
             {TITLES[docType] || 'FACTURE N°'} {numero}
           </h1>

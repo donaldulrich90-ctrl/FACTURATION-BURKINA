@@ -82,9 +82,9 @@ export async function exportFacturePdfVector(data) {
     doc.setTextColor(0, 0, 0);
   };
 
-  // En-tête : Logo + Émetteur
-  const logoW = 45;
-  const logoH = 28;
+  // En-tête : Logo + Émetteur (taille selon theme.logoSize)
+  const LOGO_SIZES_PDF = { small: [42, 28], medium: [52, 34], large: [65, 42] };
+  const [logoW, logoH] = LOGO_SIZES_PDF[theme?.logoSize] || LOGO_SIZES_PDF.large;
   if (logoDataUrl && (logoDataUrl.startsWith('data:image/png') || logoDataUrl.startsWith('data:image/jpeg') || logoDataUrl.startsWith('data:image/jpg'))) {
     try {
       const fmt = logoDataUrl.includes('png') ? 'PNG' : 'JPEG';

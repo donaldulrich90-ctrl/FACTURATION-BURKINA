@@ -814,9 +814,10 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
   const [factureTheme, setFactureTheme] = useState(() => {
     try {
       const raw = localStorage.getItem('fasomarches_facture_theme');
-      return raw ? JSON.parse(raw) : { palette: 'bleu', font: 'sans', watermark: true };
+      const t = raw ? JSON.parse(raw) : {};
+      return { palette: 'bleu', font: 'sans', watermark: true, logoSize: 'large', ...t, logoSize: t.logoSize || 'large' };
     } catch {
-      return { palette: 'bleu', font: 'sans', watermark: true };
+      return { palette: 'bleu', font: 'sans', watermark: true, logoSize: 'large' };
     }
   });
   const [showDateOnFacture, setShowDateOnFacture] = useState(() => {
@@ -1465,6 +1466,20 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
                   <option value="mono">Monospace</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-faso-text-500 uppercase tracking-wider mb-1">
+                  Taille du logo
+                </label>
+                <select
+                  value={factureTheme.logoSize || 'large'}
+                  onChange={(e) => setFactureTheme((t) => ({ ...t, logoSize: e.target.value }))}
+                  className="w-full border border-faso-border rounded-md p-2.5 text-sm focus:ring-2 focus:ring-faso-primary/30 outline-none"
+                >
+                  <option value="small">Petit</option>
+                  <option value="medium">Moyen</option>
+                  <option value="large">Grand</option>
+                </select>
+              </div>
               <label className="flex items-center gap-2 cursor-pointer pt-1">
                 <input
                   type="checkbox"
@@ -1741,7 +1756,7 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
       </div>
 
       {showPreview && items.length > 0 && (
-        <div className="mt-8 w-full max-w-full overflow-x-auto">
+        <div className="mt-8 w-full max-w-full overflow-x-hidden">
           <FacturePreview
             numero={numeroFacture || genererNumeroFacture(1, new Date().getFullYear(), docType)}
             docType={docType}

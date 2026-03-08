@@ -90,42 +90,60 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Impression : norme A4 ISO 216, marges 20 mm (usage professionnel) */
+/* Impression : format A4 - marge bas 30mm pour éviter coupure (zone non imprimable) */
 @page {
-  size: A4 portrait;
-  margin: 20mm;
+  size: 210mm 297mm;
+  margin: 0 0 30mm 0;
 }
 
 @media print {
-  /* Facture : masquer tout sauf la zone d'impression (évite page vierge) */
+  /* Masquer scrollbars et bande de défilement à l'impression facture */
+  html.print-facture, body.print-facture,
+  body.print-facture #facture-print-wrapper,
+  body.print-facture #facture-print {
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  body.print-facture ::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  /* Facture : masquer tout sauf la zone d'impression */
   body.print-facture > *:not(#facture-print-wrapper) { display: none !important; }
   body.print-facture #facture-print-wrapper {
     display: block !important;
     visibility: visible !important;
     position: static !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
     box-shadow: none !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+    /* Scale 96% pour tenir dans la zone imprimable et éviter coupure en bas */
+    transform: scale(0.96) !important;
+    transform-origin: top left !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
   body.print-facture #facture-print-wrapper * { visibility: visible !important; }
-  /* Zone facture : IDENTIQUE à l'affichage plateforme (même padding, largeur, layout) */
+  /* Zone facture : police plateforme (Inter) + dimensions A4 */
   body.print-facture #facture-print {
-    /* Conserver exactement les mêmes dimensions qu'à l'écran */
+    font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif !important;
     width: 210mm !important;
     min-width: 210mm !important;
     max-width: 210mm !important;
     min-height: 297mm !important;
-    padding: 3rem !important; /* p-12 = 48px, identique à l'écran */
-    margin: 0 auto !important;
+    padding: 3rem !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
+    overflow-x: hidden !important;
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
+    page-break-after: auto !important;
   }
   /* Filigrane : masquer à l'impression (évite chevauchement) */
   body.print-facture #facture-print [data-facture-watermark] {
