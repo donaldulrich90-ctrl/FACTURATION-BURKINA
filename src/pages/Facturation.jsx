@@ -39,6 +39,7 @@ import {
   Percent,
   Moon,
   Sun,
+  Key,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -63,6 +64,8 @@ import FacturePreview from '../components/FacturePreview';
 import CompanyInfoBar from '../components/CompanyInfoBar';
 import ChatWidget from '../components/ChatWidget';
 import ImportFactureFromPhoto from '../components/ImportFactureFromPhoto';
+import Card from '../components/ui/Card';
+import Badge from '../components/ui/Badge';
 import { parseMercurialeCsv } from '../utils/importMercurialeCsv';
 import { extractAndParseDocx } from '../utils/docxExtract';
 
@@ -71,27 +74,6 @@ const MOCK_FACTURES = [
   { id: 'F-2024-002', client: 'Mairie de Bobo-Dioulasso', date: '2024-05-02', montant: 1250000, statut: 'En attente' },
   { id: 'F-2024-003', client: 'Projet Santé (PADS)', date: '2024-05-15', montant: 8900000, statut: 'Brouillon' },
 ];
-
-const Card = ({ children, className = "" }) => (
-  <div className={`bg-faso-card rounded-faso-lg shadow-card border border-faso-border p-6 ${className}`}>
-    {children}
-  </div>
-);
-
-const Badge = ({ status }) => {
-  const styles = {
-    'Ouvert': 'bg-faso-statut-valide-bg text-faso-statut-valide border border-faso-statut-valide/30',
-    'Fermé': 'bg-faso-statut-rejete-bg text-faso-statut-rejete border border-faso-statut-rejete/30',
-    'Payée': 'bg-faso-statut-valide-bg text-faso-statut-valide border border-faso-statut-valide/30',
-    'En attente': 'bg-faso-statut-attente-bg text-faso-statut-attente border border-faso-statut-attente/30',
-    'Brouillon': 'bg-faso-statut-brouillon-bg text-faso-statut-brouillon border border-faso-statut-brouillon/30',
-  };
-  return (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium ${styles[status] || 'bg-faso-hover-bg'}`}>
-      {status}
-    </span>
-  );
-};
 
 const Dashboard = ({ onNavigateToTab }) => {
   const { currentUser } = useAuth();
@@ -815,7 +797,7 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
     try {
       const raw = localStorage.getItem('fasomarches_facture_theme');
       const t = raw ? JSON.parse(raw) : {};
-      return { palette: 'bleu', font: 'sans', watermark: true, logoSize: 'large', ...t, logoSize: t.logoSize || 'large' };
+      return { palette: 'bleu', font: 'sans', watermark: true, ...t, logoSize: (t && t.logoSize) || 'large' };
     } catch {
       return { palette: 'bleu', font: 'sans', watermark: true, logoSize: 'large' };
     }
@@ -3649,7 +3631,7 @@ export default function Facturation() {
   const [suiviRefreshTrigger, setSuiviRefreshTrigger] = useState(0);
   const lastProcessedMercurialeRef = React.useRef(null);
   const mainScrollRef = React.useRef(null);
-  const { currentUser, logout, apiMode, getCompanyEntete } = useAuth();
+  const { currentUser, logout, apiMode, getCompanyEntete, openChangePasswordModal } = useAuth();
   const { getMercuriale, loadRegionFromApi } = useMercuriale();
   const { theme, toggleTheme } = useTheme();
 
@@ -3791,6 +3773,9 @@ export default function Facturation() {
             {activeTab === 'archives-marches' && 'Archives marchés exécutés'}
           </h2>
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button onClick={openChangePasswordModal} className="p-2 text-faso-text-secondary hover:bg-faso-hover-bg rounded-faso" title="Changer mot de passe">
+              <Key size={18} />
+            </button>
             <button onClick={toggleTheme} className="p-2 text-faso-text-secondary hover:bg-faso-hover-bg rounded-faso" title={theme === 'dark' ? 'Mode jour' : 'Mode nuit'}>
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>

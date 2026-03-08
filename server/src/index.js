@@ -12,6 +12,8 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[unhandledRejection]', reason, promise);
 });
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -32,8 +34,33 @@ import { initSocket } from './socket.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const isProduction = process.env.NODE_ENV === 'production';
 
-app.use(cors({ origin: true, credentials: true }));
+// En-têtes de sécurité
+app.use(helmet({ contentSecurityPolicy: false })); // CSP désactivé pour compatibilité PWA/scripts
+
+// CORS : en production, restreindre aux origines autorisées via CORS_ORIGINS
+const corsOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim()) : true;
+app.use(cors({ origin: corsOrigins, credentials: true }));
+
+// Rate limiting global (200 req/15min par IP)
+app.use('/api', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: 'Trop de requêtes. Réessayez dans quelques minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
+
+// Rate limiting strict sur le login (5 tentatives / 15 min)
+app.use('/api/auth/login', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
+
 // Limite augmentée pour logos base64 et imports mercuriale volumineux (12 000+ articles)
 app.use(express.json({ limit: '25mb' }));
 

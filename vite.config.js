@@ -68,4 +68,16 @@ export default defineConfig({
   optimizeDeps: {
     include: ['pdfjs-dist'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-pdf': ['pdfjs-dist', 'jspdf', 'html2canvas'],
+          'vendor-ocr': ['tesseract.js'],
+          'vendor-doc': ['mammoth'],
+        },
+      },
+    },
+  },
 });

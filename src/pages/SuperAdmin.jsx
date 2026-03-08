@@ -17,6 +17,7 @@ import {
   FileSpreadsheet,
   Download,
   Pencil,
+  Key,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useMercuriale } from '../context/MercurialeContext';
@@ -32,7 +33,7 @@ const statusStyles = {
 };
 
 export default function SuperAdmin() {
-  const { currentUser, logout, apiMode, companies: contextCompanies } = useAuth();
+  const { currentUser, logout, apiMode, companies: contextCompanies, openChangePasswordModal } = useAuth();
   const { getPdf, setMercurialeDocx, removeMercurialeDocx, appendMercurialeLines, replaceMercurialeLines, mergeMercurialeLines, clearMercurialeLines, countDuplicateCodes, extractDocxToLines, byRegion } = useMercuriale();
   const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
@@ -475,6 +476,14 @@ export default function SuperAdmin() {
               <span className="text-sm text-red-600 font-medium">✗ Serveur inaccessible. Lancez LANCER.bat</span>
             )}
             <span className="text-sm text-gray-500">{currentUser?.email}</span>
+            <button
+              onClick={openChangePasswordModal}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Changer mot de passe"
+            >
+              <Key size={18} />
+              Mot de passe
+            </button>
             <button
               onClick={() => navigate('/app?tab=mercuriale')}
               className="flex items-center gap-2 px-4 py-2 text-faso-primary hover:bg-faso-hover-bg rounded-lg transition-colors"

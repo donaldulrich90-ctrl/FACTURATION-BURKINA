@@ -3,10 +3,7 @@
  * Utilise pdfjs-dist installé en local (package npm) avec worker configuré pour Vite.
  */
 
-import * as pdfjsModule from 'pdfjs-dist';
-
-// Compatibilité : selon la version, l'API peut être sur le module ou sur .default
-const pdfjsLib = pdfjsModule.getDocument ? pdfjsModule : (pdfjsModule.default || pdfjsModule);
+import * as pdfjsLib from 'pdfjs-dist';
 
 // Worker PDF.js : servi depuis public/pdf.worker.min.mjs (copié par postinstall)
 if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {

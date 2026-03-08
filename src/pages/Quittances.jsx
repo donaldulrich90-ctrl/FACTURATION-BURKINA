@@ -10,6 +10,7 @@ import {
   Calendar,
   Banknote,
   ChevronRight,
+  Key,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CompanyInfoBar from '../components/CompanyInfoBar';
@@ -31,7 +32,7 @@ export default function Quittances() {
     referenceBancaire: '',
     remarques: '',
   });
-  const { currentUser, logout, apiMode } = useAuth();
+  const { currentUser, logout, apiMode, openChangePasswordModal } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,6 +92,9 @@ export default function Quittances() {
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button onClick={openChangePasswordModal} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg" title="Changer mot de passe">
+              <Key size={18} />
+            </button>
             <button onClick={() => navigate('/app')} className="flex items-center gap-2 p-2 sm:px-4 sm:py-2 text-gray-600 hover:bg-gray-100 rounded-lg" title="Tableau de bord">
               <LayoutDashboard size={18} />
               <span className="hidden sm:inline">Tableau de bord</span>

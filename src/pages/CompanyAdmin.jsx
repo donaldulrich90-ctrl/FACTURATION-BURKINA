@@ -14,6 +14,7 @@ import {
   Moon,
   Sun,
   Edit2,
+  Key,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CompanyInfoBar from '../components/CompanyInfoBar';
@@ -23,7 +24,7 @@ import { api } from '../api/client';
 import { compressImageForStorage } from '../utils/imageCompress';
 
 export default function CompanyAdmin() {
-  const { currentUser, logout, refreshUser, apiMode, getCompanyUsers, getCompanySubscription, updateCompanyLocal, getCompanyEntete } = useAuth();
+  const { currentUser, logout, refreshUser, apiMode, getCompanyUsers, getCompanySubscription, updateCompanyLocal, getCompanyEntete, openChangePasswordModal } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [company, setCompany] = useState(null);
@@ -246,6 +247,9 @@ export default function CompanyAdmin() {
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button onClick={openChangePasswordModal} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg" title="Changer mot de passe">
+              <Key size={18} />
+            </button>
             <button onClick={toggleTheme} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg" title={theme === 'dark' ? 'Mode jour' : 'Mode nuit'}>
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>

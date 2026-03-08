@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { api } from '../api/client';
 import { getEntete, setEntete } from '../utils/enteteStorage';
+import ChangePasswordModal from '../components/ChangePasswordModal';
 
 const STORAGE_USER = 'platform_current_user';
 
@@ -40,6 +41,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [apiMode, setApiMode] = useState(null);
   const [enteteCache, setEnteteCache] = useState({});
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const companies = loadJson('platform_companies', defaultCompanies);
   const users = loadJson('platform_users', defaultUsers);
@@ -162,9 +164,22 @@ export function AuthProvider({ children }) {
     getCompanySubscription,
     updateCompanyLocal,
     getCompanyEntete,
+    openChangePasswordModal: () => setShowChangePasswordModal(true),
+    closeChangePasswordModal: () => setShowChangePasswordModal(false),
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      {currentUser && showChangePasswordModal && (
+        <ChangePasswordModal
+          onClose={() => setShowChangePasswordModal(false)}
+          onSuccess={() => setShowChangePasswordModal(false)}
+          apiMode={apiMode}
+        />
+      )}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

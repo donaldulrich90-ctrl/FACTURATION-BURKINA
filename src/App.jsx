@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import PwaInstallBanner from './components/PwaInstallBanner';
-import Login from './pages/Login';
-import SuperAdmin from './pages/SuperAdmin';
-import CompanyAdmin from './pages/CompanyAdmin';
-import Facturation from './pages/Facturation';
-import Quittances from './pages/Quittances';
+
+const Login = lazy(() => import('./pages/Login'));
+const SuperAdmin = lazy(() => import('./pages/SuperAdmin'));
+const CompanyAdmin = lazy(() => import('./pages/CompanyAdmin'));
+const Facturation = lazy(() => import('./pages/Facturation'));
+const Quittances = lazy(() => import('./pages/Quittances'));
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-faso-bg-light">
+    <div className="animate-spin w-10 h-10 border-2 border-faso-primary border-t-transparent rounded-full" />
+  </div>
+);
 
 function ProtectedRoute({ children, allowedRoles }) {
   const { currentUser, loading } = useAuth();
@@ -40,7 +47,9 @@ export default function App() {
           path="/login"
           element={
             <PublicRoute>
-              <Login />
+              <Suspense fallback={<PageLoader />}>
+                <Login />
+              </Suspense>
             </PublicRoute>
           }
         />
@@ -48,7 +57,9 @@ export default function App() {
           path="/admin"
           element={
             <ProtectedRoute allowedRoles={['super_admin']}>
-              <SuperAdmin />
+              <Suspense fallback={<PageLoader />}>
+                <SuperAdmin />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -56,7 +67,9 @@ export default function App() {
           path="/company"
           element={
             <ProtectedRoute allowedRoles={['company_admin']}>
-              <CompanyAdmin />
+              <Suspense fallback={<PageLoader />}>
+                <CompanyAdmin />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -64,7 +77,9 @@ export default function App() {
           path="/app"
           element={
             <ProtectedRoute allowedRoles={['company_admin', 'company_user', 'super_admin']}>
-              <Facturation />
+              <Suspense fallback={<PageLoader />}>
+                <Facturation />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -72,7 +87,9 @@ export default function App() {
           path="/quittances"
           element={
             <ProtectedRoute allowedRoles={['company_admin', 'company_user']}>
-              <Quittances />
+              <Suspense fallback={<PageLoader />}>
+                <Quittances />
+              </Suspense>
             </ProtectedRoute>
           }
         />

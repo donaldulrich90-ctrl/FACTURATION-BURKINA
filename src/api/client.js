@@ -39,6 +39,14 @@ export const api = {
   logout() {
     localStorage.removeItem('fasomarches_token');
   },
+  async changePassword(currentPassword, newPassword) {
+    const r = await fetch(`${API_BASE}/auth/change-password`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    return handleResponse(r);
+  },
   async getMe() {
     const r = await fetch(`${API_BASE}/auth/me`, { headers: getHeaders() });
     return handleResponse(r);
