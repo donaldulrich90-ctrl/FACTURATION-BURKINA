@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CompanyInfoBar from '../components/CompanyInfoBar';
-import ChatWidget from '../components/ChatWidget';
 import { useTheme } from '../context/ThemeContext';
 import { api } from '../api/client';
 import { compressImageForStorage } from '../utils/imageCompress';
@@ -269,7 +268,6 @@ export default function CompanyAdmin() {
         </div>
       </header>
 
-      <ChatWidget />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {isExpired && (

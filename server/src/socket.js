@@ -38,7 +38,9 @@ export function initSocket(server) {
       return;
     }
     const room = `company:${companyId}`;
+    const userRoom = `user:${userId}`;
     socket.join(room);
+    socket.join(userRoom);
     socket.companyId = companyId;
 
     socket.on('chat:message', async (data) => {
@@ -59,7 +61,12 @@ export function initSocket(server) {
             sender: { select: { id: true, name: true, email: true } },
           },
         });
-        io.to(room).emit('chat:new', msg);
+        if (receiverId) {
+          io.to(`user:${userId}`).emit('chat:new', msg);
+          io.to(`user:${receiverId}`).emit('chat:new', msg);
+        } else {
+          io.to(room).emit('chat:new', msg);
+        }
       } catch (err) {
         console.error('Socket chat:', err);
       }

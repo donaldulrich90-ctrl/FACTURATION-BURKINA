@@ -431,8 +431,9 @@ export const api = {
     const r = await fetch(`${API_BASE}/simulations/${id}`, { method: 'DELETE', headers: getHeaders() });
     if (r.status !== 204) await handleResponse(r);
   },
-  async getChatMessages() {
-    const r = await fetch(`${API_BASE}/chat`, { headers: getHeaders() });
+  async getChatMessages(receiverId = null) {
+    const url = receiverId ? `${API_BASE}/chat?receiverId=${encodeURIComponent(receiverId)}` : `${API_BASE}/chat`;
+    const r = await fetch(url, { headers: getHeaders() });
     return handleResponse(r);
   },
   async postChatMessage(data) {

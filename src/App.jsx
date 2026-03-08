@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import PwaInstallBanner from './components/PwaInstallBanner';
 import AssistantWidget from './components/AssistantWidget';
+import ChatWidget from './components/ChatWidget';
 
 const Login = lazy(() => import('./pages/Login'));
 const SuperAdmin = lazy(() => import('./pages/SuperAdmin'));
@@ -98,6 +99,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
       <AssistantWidget />
+      <ChatWidget />
     </BrowserRouter>
   );
 }

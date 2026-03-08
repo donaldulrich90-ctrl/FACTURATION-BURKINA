@@ -62,7 +62,6 @@ import { calculerTotauxFacture, genererNumeroFacture, genererFecUuid } from '../
 import { exportFacturePdfVector, exportDaoPdf } from '../utils/exportFacturePdf';
 import FacturePreview from '../components/FacturePreview';
 import CompanyInfoBar from '../components/CompanyInfoBar';
-import ChatWidget from '../components/ChatWidget';
 import ImportFactureFromPhoto from '../components/ImportFactureFromPhoto';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
@@ -3793,7 +3792,6 @@ export default function Facturation() {
           </div>
         </header>
 
-        <ChatWidget />
 
         {isMobileMenuOpen && (
           <div className="fixed inset-0 bg-gradient-to-b from-faso-sidebar-start to-faso-sidebar-end z-50 p-4 sm:p-6 flex flex-col md:hidden overflow-y-auto overflow-x-hidden">

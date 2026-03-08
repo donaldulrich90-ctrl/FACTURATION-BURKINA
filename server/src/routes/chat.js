@@ -5,13 +5,29 @@ import { authMiddleware } from '../middleware/auth.js';
 const prisma = new PrismaClient();
 const router = Router();
 
-// Messages du canal entreprise (tous les utilisateurs de la même entreprise)
+// Messages du canal entreprise (groupe ou conversation privée)
+// GET /?receiverId=xxx → conversation 1-to-1 avec cet utilisateur
+// GET / → canal groupe (tous les messages receiverId=null)
 router.get('/', authMiddleware, async (req, res) => {
   const companyId = req.companyId;
+  const userId = req.userId;
   if (!companyId) return res.status(403).json({ error: 'Entreprise requise' });
+  const receiverId = req.query.receiverId || null;
   try {
+    let where;
+    if (receiverId) {
+      where = {
+        companyId,
+        OR: [
+          { senderId: userId, receiverId },
+          { senderId: receiverId, receiverId: userId },
+        ],
+      };
+    } else {
+      where = { companyId, receiverId: null };
+    }
     const messages = await prisma.chatMessage.findMany({
-      where: { companyId, receiverId: null },
+      where,
       include: {
         sender: { select: { id: true, name: true, email: true } },
       },

@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CompanyInfoBar from '../components/CompanyInfoBar';
-import ChatWidget from '../components/ChatWidget';
 import { api } from '../api/client';
 
 const formatPrix = (n) => (n != null ? Number(n).toLocaleString('fr-FR') + ' F' : '—');
@@ -107,7 +106,6 @@ export default function Quittances() {
         </div>
       </header>
 
-      <ChatWidget />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
