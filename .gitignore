@@ -5,6 +5,8 @@ server/node_modules/
 # Base de données (fichier volumineux, ne pas versionner)
 server/prisma/dev.db
 *.db
+*.db
+!server/prisma/dev.db.backup
 *.db-journal
 
 # Build
