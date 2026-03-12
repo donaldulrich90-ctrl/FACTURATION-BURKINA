@@ -8,7 +8,7 @@
     "dev:server": "cd server && npm run dev",
     "dev:client": "vite",
     "build": "npx vite build",
-    "build:render": "npm install --include=dev && npm run build && cd server && npm install --include=dev && ./node_modules/.bin/prisma generate && ./node_modules/.bin/prisma db push",
+    "build:render": "npm install --include=dev && npm run build && cd server && npm install --include=dev && ./node_modules/.bin/prisma generate && cp prisma/dev.db.backup prisma/dev.db",
     "start": "npm run build && cd server && node src/index.js",
     "preview": "vite preview",
     "postinstall": "node scripts/copy-pdf-worker.cjs",
