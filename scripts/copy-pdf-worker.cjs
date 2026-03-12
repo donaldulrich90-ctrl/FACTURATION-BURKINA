@@ -14,12 +14,15 @@ try {
   process.exit(0);
 }
 
-const src = path.join(pdfjsRoot, 'build', 'pdf.worker.min.mjs');
+let src = path.join(pdfjsRoot, 'build', 'pdf.worker.min.mjs');
 const publicDir = path.join(projectRoot, 'public');
 const dest = path.join(publicDir, 'pdf.worker.min.mjs');
 
 if (!fs.existsSync(src)) {
-  console.warn('copy-pdf-worker: fichier worker non trouvé:', src);
+  src = path.join(pdfjsRoot, 'legacy', 'build', 'pdf.worker.min.mjs');
+}
+if (!fs.existsSync(src)) {
+  console.warn('copy-pdf-worker: fichier worker non trouvé, skip.');
   process.exit(0);
 }
 

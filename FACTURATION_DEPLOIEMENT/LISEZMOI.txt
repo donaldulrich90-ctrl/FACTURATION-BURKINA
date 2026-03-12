@@ -1,0 +1,43 @@
+============================================
+  FasoMarchés - Gestion Facturation
+============================================
+
+POUR ÉVITER LES ERREURS - ORDRE À SUIVRE
+-----------------------------------------
+
+1) PREMIÈRE FOIS (ou si Node.js n'est pas installé)
+   → Double-cliquez sur : INSTALLER-NECESSAIRE.bat
+   Ce script :
+   - Détecte Node.js (dans le PATH ou dans Program Files)
+   - Propose d'installer Node.js avec winget si absent
+   - Lance npm install (avec repli sur --legacy-peer-deps si erreur)
+   Après installation de Node.js, fermez la fenêtre puis relancez
+   INSTALLER-NECESSAIRE.bat une 2e fois pour installer les dépendances.
+
+2) LANCER L'APPLICATION
+   → Double-cliquez sur : LANCER.bat
+   Ou dans un terminal : npm run dev
+   L'app s'ouvre sur http://localhost:5173
+
+FICHIERS UTILES
+---------------
+- INSTALLER-NECESSAIRE.bat : installe Node (si besoin) + dépendances
+- LANCER.bat              : lance le serveur (installe les deps si manquantes)
+- installer-et-lancer.ps1 : même chose en PowerShell
+
+LECTURE DES PDF (MERCURIALES)
+-----------------------------
+- Après "npm install", un script copie automatiquement le worker PDF.js dans
+  public/pdf.worker.min.mjs. Si la lecture des PDF échoue, relancez
+  "npm install" puis "npm run dev" pour régénérer ce fichier.
+
+EN CAS D'ERREUR
+---------------
+- "node n'est pas reconnu" : lancez INSTALLER-NECESSAIRE.bat ou installez
+  Node.js depuis https://nodejs.org (cochez "Add to PATH").
+- "npm install a échoué"  : relancez INSTALLER-NECESSAIRE.bat ou vérifiez
+  votre connexion Internet.
+- Page blanche ou mauvaise page : assurez-vous d'ouvrir http://localhost:5173
+  (et non 3000). L'app FasoMarchés tourne sur le port 5173.
+- "Lecture PDF indisponible" : exécutez "npm install" puis relancez l'app
+  (le worker PDF doit être présent dans le dossier public/).

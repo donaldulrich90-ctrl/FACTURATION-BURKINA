@@ -21,13 +21,13 @@ Pour partager un **lien** permettant de tester l’application en ligne, vous po
    - **Root Directory** : laisser vide (racine du projet)
    - **Runtime** : `Node`
    - **Build Command** :  
-     `npm install && npm run build && cd server && npm install && npm run db:deploy`
+     `npm install && npm run build && cd server && npm install && npx prisma generate && npx prisma db push`
    - **Start Command** :  
      `cd server && node src/index.js`
    - **Variables d’environnement** (Environment) :
      - `NODE_ENV` = `production`
-     - `PORT` = `3001` (ou laisser Render le définir)
      - `DATABASE_URL` = `file:./dev.db` (SQLite par défaut)
+     - `JWT_SECRET` = clé longue et aléatoire (obligatoire)
      - `SUBSCRIPTION_EXPIRE_INTERVAL_MS` = `3600000` (optionnel : expiration auto des abonnements)
 
 4. **Déploiement**  

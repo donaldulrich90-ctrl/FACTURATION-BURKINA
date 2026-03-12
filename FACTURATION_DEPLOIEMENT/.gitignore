@@ -1,0 +1,39 @@
+# Dépendances
+node_modules/
+server/node_modules/
+
+# Base de données (fichier volumineux, ne pas versionner)
+server/prisma/dev.db
+*.db
+*.db-journal
+
+# Build
+dist/
+build/
+
+# Environnement
+.env
+server/.env
+.env.local
+.env.*.local
+
+# Logs et cache
+*.log
+npm-debug.log*
+.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outils externes (volumineux)
+cloudflared.exe
+
+# Prisma
+server/node_modules/.prisma/

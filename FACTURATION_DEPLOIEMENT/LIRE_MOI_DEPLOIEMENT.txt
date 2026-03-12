@@ -1,0 +1,11 @@
+========================================== 
+  FasoMarches - Deploiement ordinateur dedie 
+========================================== 
+ 
+  Transferez ce dossier sur l'ordinateur dedie. 
+  Puis double-cliquez sur INSTALLER_ET_LANCER.bat 
+ 
+  URL : http://localhost:3001 ou http://IP:3001 
+  Connexion : admin@plateforme.com / admin123 
+ 
+  Voir GUIDE_DEPLOIEMENT_ORDINATEUR_DEDIE.md 
