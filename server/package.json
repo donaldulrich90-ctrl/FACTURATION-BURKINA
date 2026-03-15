@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "predev": "prisma generate || exit 0",
+    "predev": "node scripts/prepare-schema-for-env.js && prisma generate || exit 0",
     "dev": "nodemon --watch src --ext js --exec node src/index.js",
     "start": "node src/index.js",
-    "db:generate": "node ./node_modules/prisma/build/index.js generate",
+    "db:generate": "node scripts/prepare-schema-for-env.js && node ./node_modules/prisma/build/index.js generate",
     "db:push": "node ./node_modules/prisma/build/index.js db push",
     "db:deploy": "npm run db:generate && npm run db:push",
     "db:migrate": "prisma migrate dev",

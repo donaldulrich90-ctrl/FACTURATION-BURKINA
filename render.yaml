@@ -1,5 +1,8 @@
 # Configuration Render pour FACTURATION-BURKINA (FasoMarchés)
 # https://render.com/docs/blueprint-spec
+#
+# IMPORTANT : Liez la base PostgreSQL (FACTURATION) au service via le dashboard Render
+# pour que DATABASE_URL soit défini automatiquement (Add from Render).
 
 services:
   - type: web
@@ -7,17 +10,15 @@ services:
     runtime: node
 
     buildCommand: |
-      npm install
+      npm install --include=dev
       npm run build
-      cd server && npm install && npx prisma generate && npx prisma db push
+      cd server && npm install --include=dev && npm run db:generate && npx prisma db push && npx prisma db seed
 
     startCommand: cd server && node src/index.js
 
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
-        value: file:./dev.db
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN

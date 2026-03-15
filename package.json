@@ -8,7 +8,7 @@
     "dev:server": "cd server && npm run dev",
     "dev:client": "vite",
     "build": "npx vite build",
-"build:render": "npm install --include=dev && npm run build && cd server && npm install --include=dev && ./node_modules/.bin/prisma generate && cp prisma/dev.db.backup prisma/dev.db",    "start": "npm run build && cd server && node src/index.js",
+"build:render": "npm install --include=dev && npm run build && cd server && npm install --include=dev && npm run db:generate && npx prisma db push && npx prisma db seed",    "start": "npm run build && cd server && node src/index.js",
     "preview": "vite preview",
     "postinstall": "node scripts/copy-pdf-worker.cjs",
     "guide:pdf": "npx --yes md-to-pdf GUIDE_ENTREPRISES.md -o GUIDE_ENTREPRISES.pdf",
