@@ -773,6 +773,11 @@ const formatNombre = (n) => (n != null && !isNaN(n) ? Number(n).toLocaleString('
 
 const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArticles = [], lastProcessedMercurialeRef, editingFactureId, editingFactureData, onClearEdit, onFactureSaved }) => {
   const { currentUser, getCompanyEntete, apiMode } = useAuth();
+  const [factureRegionId, setFactureRegionId] = useState(() => {
+    try {
+      return localStorage.getItem('fasomarches_facture_region') || 'ouagadougou';
+    } catch { return 'ouagadougou'; }
+  });
   const [docType, setDocType] = useState('proforma');
   const [modeFacture, setModeFacture] = useState('simple'); // simple | commande (marché à commande)
   const [sourceDocumentId, setSourceDocumentId] = useState(null);
@@ -965,8 +970,11 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
   const totaux = calculerTotauxFacture(calculateTotal(), airsiTaux, tvaAppliquee);
 
   const searchTerm = searchArticle.trim().toLowerCase();
+  const articlesForRegion = factureRegionId
+    ? mercurialeArticles.filter((a) => a.regionId === factureRegionId)
+    : mercurialeArticles;
   const suggestions = searchTerm.length >= 1
-    ? mercurialeArticles.filter(
+    ? articlesForRegion.filter(
         (a) =>
           (a.designation && a.designation.toLowerCase().includes(searchTerm)) ||
           (a.code && a.code.toLowerCase().includes(searchTerm))
@@ -1012,6 +1020,14 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
   useEffect(() => {
     if (apiMode) api.getClients().then(setClients).catch(() => setClients([]));
   }, [apiMode]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('fasomarches_facture_region', factureRegionId || 'ouagadougou');
+    } catch {
+      // ignore
+    }
+  }, [factureRegionId]);
 
   useEffect(() => {
     try {
@@ -1607,17 +1623,38 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
               )
             ) : (
             <>
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-              <div className="relative flex-1 min-w-[200px]" ref={autocompleteRef}>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-faso-text-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Rechercher un article du mercurial (code ou désignation)..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-faso-border rounded-lg focus:ring-2 focus:ring-faso-primary focus:border-transparent outline-none text-sm"
-                  value={searchArticle}
-                  onChange={(e) => { setSearchArticle(e.target.value); setShowSuggestions(true); }}
-                  onFocus={() => searchArticle.trim().length >= 1 && setShowSuggestions(true)}
-                />
+            <div className="p-4 rounded-lg border border-faso-border bg-faso-hover-bg/30 mb-4">
+              <p className="text-sm font-medium text-faso-text-600 mb-3">
+                Recherche d'articles dans la mercuriale — <span className="font-semibold text-faso-primary">{(REGIONS_BURKINA.find((r) => r.id === factureRegionId)?.nom || factureRegionId)}</span>
+              </p>
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="flex flex-col gap-1 shrink-0">
+                  <label htmlFor="facture-region" className="text-xs font-medium text-faso-text-500">Région</label>
+                  <select
+                    id="facture-region"
+                    value={factureRegionId}
+                    onChange={(e) => setFactureRegionId(e.target.value)}
+                    className="border border-faso-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-faso-primary focus:border-transparent outline-none bg-white min-w-[180px]"
+                    title="Choisissez la région dont les prix seront utilisés pour cette facture"
+                  >
+                    {REGIONS_BURKINA.map((r) => (
+                      <option key={r.id} value={r.id}>{r.nom} ({r.chefLieu})</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="relative flex flex-col gap-1 flex-1 min-w-[240px]" ref={autocompleteRef}>
+                  <label className="text-xs font-medium text-faso-text-500">Recherche dans cette région</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-faso-text-400" size={18} />
+                    <input
+                      type="text"
+                      placeholder={`Code ou désignation (ex: 03.1.1, agenda, rame...)`}
+                      className="w-full pl-10 pr-4 py-2.5 border border-faso-border rounded-lg focus:ring-2 focus:ring-faso-primary focus:border-transparent outline-none text-sm"
+                      value={searchArticle}
+                      onChange={(e) => { setSearchArticle(e.target.value); setShowSuggestions(true); }}
+                      onFocus={() => searchArticle.trim().length >= 1 && setShowSuggestions(true)}
+                    />
+                  </div>
                 {showSuggestions && suggestions.length > 0 && (
                 <ul className="absolute z-20 left-0 right-0 mt-1 bg-white border border-faso-border rounded-lg shadow-lg max-h-[320px] overflow-y-auto min-w-[480px]">
                   {suggestions.map((art) => (
@@ -1646,6 +1683,12 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
                   ))}
                 </ul>
               )}
+              {showSuggestions && searchTerm.length >= 1 && suggestions.length === 0 && (
+                <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-faso-border rounded-lg shadow-lg p-4 text-sm text-faso-text-600">
+                  Aucun article trouvé dans {(REGIONS_BURKINA.find((r) => r.id === factureRegionId)?.nom || factureRegionId)}. Essayez une autre région ou ajoutez un article à la main.
+                </div>
+              )}
+              </div>
               </div>
               <button
                 type="button"

@@ -15,7 +15,8 @@
     "db:verify-mercurial": "node scripts/verify-import.js",
     "db:fix-mercuriale-prices": "node scripts/fix-mercuriale-prices.js",
     "db:inspect-factures": "node scripts/inspect-factures.js",
-    "db:restore-facture-prices": "node scripts/restore-facture-prices.js"
+    "db:restore-facture-prices": "node scripts/restore-facture-prices.js",
+    "sync:mercuriale-online": "node scripts/sync-mercuriale-to-online.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

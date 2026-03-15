@@ -132,9 +132,32 @@ export async function extractTextFromPdf(blobOrBuffer) {
 const CODE_PATTERN = /^\s*(?:Sous-catégorie\s+)?([\d.]+\.[\d.]+(?:\.\d+)*|\d+(?:\.\d+)*|[A-Z]{2,}-[A-Z0-9-]+\d+)/i;
 const CONDITIONNEMENTS = ['unité', 'unités', 'paquet', 'paquets', 'sac', 'sacs', 'carton', 'cartons', 'boîte', 'boîtes', 'bidon', 'bidons', 'paquet de 10', 'paquet de 5', 'ramette', 'botte'];
 
+/**
+ * Parse un prix FCFA : gère espaces (42 500), virgule décimale (42,50), point milliers (42.500 ou 1.500.000).
+ * Aligné sur importMercurialeCsv pour cohérence des imports PDF/CSV/Word.
+ */
 function parsePrix(s) {
-  if (!s || typeof s !== 'string') return null;
-  const n = parseFloat(s.replace(/\s/g, '').replace(',', '.'));
+  if (s == null || s === '') return null;
+  let str = String(s).replace(/\s/g, '').replace(/\u00a0/g, '').replace(/[^\d.,\-]/g, '');
+  if (!str || str === '-' || str === '.') return null;
+  const hasComma = str.includes(',');
+  const hasDot = str.includes('.');
+  if (hasComma && !hasDot) {
+    const parts = str.split(',');
+    if (parts.length === 2 && parts[1].length === 3 && /^\d+$/.test(parts[1])) {
+      str = parts.join('');
+    } else {
+      str = str.replace(',', '.');
+    }
+  } else if (hasDot && !hasComma) {
+    const parts = str.split('.');
+    if (parts.length >= 2 && parts.every((p) => /^\d+$/.test(p)) && parts[parts.length - 1].length === 3) {
+      str = parts.join('');
+    }
+  } else if (hasComma && hasDot) {
+    str = str.replace(/\./g, '').replace(',', '.');
+  }
+  const n = parseFloat(str.replace(/[^\d.\-]/g, ''));
   return isNaN(n) ? null : Math.round(n);
 }
 
@@ -199,8 +222,9 @@ function extractPricesFromEnd(str) {
       return byRegex;
     }
   }
-  if (numbers.length === 3) return [numbers[2], numbers[1], numbers[0]]; // [Min, Moyen, Max]
-  if (numbers.length === 2) return [numbers[1], numbers[1], numbers[0]];
+  // numbers est déjà [Min, Moyen, Max] (ordre gauche→droite dans la ligne)
+  if (numbers.length === 3) return [numbers[0], numbers[1], numbers[2]]; // [Min, Moyen, Max]
+  if (numbers.length === 2) return [numbers[0], Math.round((numbers[0] + numbers[1]) / 2), numbers[1]]; // [Min, Moyen≈moyenne, Max]
   return numbers;
 }
 
