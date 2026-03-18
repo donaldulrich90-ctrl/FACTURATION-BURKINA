@@ -10,8 +10,8 @@ services:
       - PORT=3001
       - JWT_SECRET=${JWT_SECRET:-changez-moi-en-production-32-caracteres-min}
     volumes:
-      # Persistance SQLite
-      - db_data:/app/server/prisma
+      # Persistance SQLite (bind mount pour pouvoir copier dev.db depuis l'hôte)
+      - ./server/prisma:/app/server/prisma
       # Fichiers uploadés (DAO, archives)
       - uploads_data:/app/server/uploads
     healthcheck:
@@ -22,5 +22,4 @@ services:
       start_period: 40s
 
 volumes:
-  db_data:
   uploads_data:
