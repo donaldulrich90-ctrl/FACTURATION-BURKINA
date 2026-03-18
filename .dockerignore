@@ -1,0 +1,38 @@
+# Dépendances
+node_modules
+server/node_modules
+
+# Base de données (ne pas inclure en build)
+*.db
+*.db-journal
+
+# Build (sera recréé)
+dist
+build
+
+# Environnement (à configurer au runtime)
+.env
+server/.env
+.env.*
+.env.local
+
+# Git
+.git
+.gitignore
+
+# Dossier de déploiement Windows
+FACTURATION_DEPLOIEMENT
+
+# Logs et cache
+*.log
+npm-debug.log*
+.cache
+
+# IDE et OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Outils externes
+cloudflared.exe

@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    container_name: fasomarches
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-changez-moi-en-production-32-caracteres-min}
+    volumes:
+      # Persistance SQLite
+      - db_data:/app/server/prisma
+      # Fichiers uploadés (DAO, archives)
+      - uploads_data:/app/server/uploads
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  db_data:
+  uploads_data:
