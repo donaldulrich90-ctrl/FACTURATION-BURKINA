@@ -14,7 +14,11 @@ Pour partager un **lien** permettant de tester l’application en ligne, vous po
    - Connectez votre dépôt **GitHub** (ou importez le projet)
    - Choisissez le dépôt **FACTURATION** (FasoMarchés)
 
-3. **Paramètres du service**
+3. **Base PostgreSQL (OBLIGATOIRE — sinon les données sont effacées à chaque déploiement)**  
+   - Dashboard → **New** → **PostgreSQL** → créez une base (plan Free)
+   - Puis : votre **Web Service** → **Environment** → **Add Environment Variable** → **Add from Render** → sélectionnez la base PostgreSQL (DATABASE_URL sera ajoutée automatiquement)
+
+4. **Paramètres du service**
    - **Name** : `fasomarches` (ou autre)
    - **Region** : Frankfurt (ou le plus proche)
    - **Branch** : `main` (ou votre branche)
@@ -26,7 +30,7 @@ Pour partager un **lien** permettant de tester l’application en ligne, vous po
      `cd server && node src/index.js`
    - **Variables d’environnement** (Environment) :
      - `NODE_ENV` = `production`
-     - `DATABASE_URL` = `file:./dev.db` (SQLite par défaut)
+     - `DATABASE_URL` = (ajoutée automatiquement si vous liez la base PostgreSQL à l’étape 3)
      - `JWT_SECRET` = clé longue et aléatoire (obligatoire)
      - `SUBSCRIPTION_EXPIRE_INTERVAL_MS` = `3600000` (optionnel : expiration auto des abonnements)
 
@@ -38,7 +42,7 @@ Pour partager un **lien** permettant de tester l’application en ligne, vous po
    **https://fasomarches-xxxx.onrender.com**  
    C’est ce lien que vous pouvez partager pour tester.
 
-**Important** : Sur l’offre gratuite Render, le serveur “s’endort” après inactivité. Le premier chargement peut prendre 30–60 secondes. Les données SQLite peuvent être réinitialisées lors d’un redéploiement (pour un vrai environnement persistant, il faudrait une base PostgreSQL).
+**Important** : Sur l’offre gratuite Render, le serveur “s’endort” après inactivité. Le premier chargement peut prendre 30–60 secondes. Utilisez PostgreSQL pour que les données persistent (sans PostgreSQL, elles sont effacées à chaque déploiement).
 
 **Extraction Word (mercuriale)** : Pour une extraction plus fiable des tableaux Word, installez Python avec `python-docx`, `pandas` et `tqdm`. Le serveur utilisera automatiquement `convertisseur.py` en priorité. Sinon, l'extraction mammoth (Node.js) est utilisée.
 

@@ -50,10 +50,11 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
   if (!companyId && req.role !== 'super_admin') {
     return res.status(400).json({ error: 'Entreprise requise' });
   }
-  const { factureId, datePaiement, montant, modePaiement, referenceBancaire, remarques } = req.body || {};
+  const { factureId, datePaiement, montant, modePaiement, referenceBancaire, remarques, userId: bodyUserId } = req.body || {};
   if (!factureId || !montant || !modePaiement) {
     return res.status(400).json({ error: 'Facture, montant et mode de paiement requis' });
   }
+  const targetUserId = (req.role === 'super_admin' && bodyUserId) ? bodyUserId : req.userId;
   const facture = await prisma.facture.findUnique({
     where: { id: factureId },
     include: { quittance: true },
@@ -74,7 +75,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
       remarques: remarques || null,
       statut: 'emise',
       companyId: facture.companyId,
-      userId: req.userId,
+      userId: targetUserId,
     },
     include: {
       facture: { include: { items: true } },

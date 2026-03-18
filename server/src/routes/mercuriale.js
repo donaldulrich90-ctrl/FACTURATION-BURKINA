@@ -166,7 +166,7 @@ router.post('/:regionId/extract-docx', authMiddleware, requireRole('super_admin'
 router.post('/:regionId/replace', authMiddleware, requireRole('super_admin', 'company_admin'), async (req, res) => {
   try {
     const { regionId } = req.params;
-    const scope = getMercurialeScope(req);
+    const scope = (req.role === 'super_admin' && req.body?.companyId) ? req.body.companyId : getMercurialeScope(req);
     const { lines } = req.body || {};
     if (!Array.isArray(lines)) return res.status(400).json({ error: 'Tableau de lignes requis' });
 

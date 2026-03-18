@@ -14,6 +14,9 @@ const isLocalhost = () => {
   return /^localhost$|^127\.0\.0\.1$/.test(h);
 };
 
+// VPS / serveur dédié = pas de veille. Render/Railway gratuit = veille possible.
+const isSleepModeHosting = () => import.meta.env.VITE_SLEEP_MODE === 'true';
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -95,11 +98,17 @@ export default function Login() {
                     <p className="text-sm text-faso-text-secondary mt-0.5">3. Le navigateur s’ouvrira automatiquement sur la plateforme</p>
                     <p className="text-xs text-faso-text-secondary mt-2">Connexion 4G : utilisez le même ordinateur où LANCER.bat tourne. Depuis un téléphone en 4G, la plateforme locale n’est pas accessible.</p>
                     </>
-                    ) : (
+                    ) : isSleepModeHosting() ? (
                     <>
                     <p className="font-medium text-faso-statut-attente">Plateforme en cours de démarrage</p>
                     <p className="text-sm text-faso-text-secondary mt-1">La plateforme est peut-être en veille. Attendez <strong>30 à 60 secondes</strong> puis cliquez sur « Réessayer la connexion ».</p>
                     <p className="text-xs text-faso-text-secondary mt-2">Sur l'offre gratuite, le serveur se met en veille après une période d'inactivité. La première connexion peut prendre jusqu'à 1 minute.</p>
+                    </>
+                    ) : (
+                    <>
+                    <p className="font-medium text-faso-statut-attente">Serveur inaccessible</p>
+                    <p className="text-sm text-faso-text-secondary mt-1">Vérifiez que le serveur Docker tourne sur le VPS. Testez <strong>/api/health</strong> dans le navigateur pour confirmer.</p>
+                    <p className="text-xs text-faso-text-secondary mt-2">Sur un VPS, le serveur ne se met pas en veille. Si la connexion échoue, le conteneur est peut-être arrêté.</p>
                     </>
                     )}
                     <button
@@ -159,7 +168,7 @@ export default function Login() {
           </form>
 
           <p className="mt-6 text-center text-white/60 text-xs">
-            {isLocalhost() ? 'Lancez LANCER.bat avant de vous connecter.' : 'Attendez 30 à 60 secondes si la plateforme est en veille.'}
+            {isLocalhost() ? 'Lancez LANCER.bat avant de vous connecter.' : isSleepModeHosting() ? 'Attendez 30 à 60 secondes si la plateforme est en veille.' : 'Vérifiez que le serveur Docker tourne sur le VPS.'}
           </p>
           </div>
         </div>

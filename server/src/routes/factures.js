@@ -92,7 +92,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
   }
   const {
     client, clientDirection, clientIfu, clientRccm, clientAddr,
-    companyId: bodyCompanyId, marcheId, marcheNumero, objetMarche, numBonCommande,
+    companyId: bodyCompanyId, userId: bodyUserId, marcheId, marcheNumero, objetMarche, numBonCommande,
     airsiTaux = 0, items: itemsRaw, type = 'proforma', sourceDocumentId, numero: numeroBody,
   } = req.body || {};
   if (!client || !Array.isArray(itemsRaw) || itemsRaw.length === 0) {
@@ -100,6 +100,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
   }
   const targetCompanyId = companyId || (req.role === 'super_admin' ? bodyCompanyId : null);
   if (!targetCompanyId) return res.status(400).json({ error: 'Entreprise requise' });
+  const targetUserId = (req.role === 'super_admin' && bodyUserId) ? bodyUserId : req.userId;
   const totalHT = itemsRaw.reduce((s, i) => s + (Number(i.quantity) || 0) * (Number(i.priceUnit) || Number(i.price) || 0), 0);
   const tva = Math.round(totalHT * 0.18);
   const totalTTC = totalHT + tva;
@@ -129,7 +130,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
       netAPayer,
       statut: 'brouillon',
       companyId: targetCompanyId,
-      userId: req.userId,
+      userId: targetUserId,
       marcheId: marcheId || null,
       items: {
         create: itemsRaw.map((i) => {

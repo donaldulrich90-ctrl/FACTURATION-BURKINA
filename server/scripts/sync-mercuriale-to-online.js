@@ -6,7 +6,7 @@
  *   node scripts/sync-mercuriale-to-online.js
  *
  * Variables d'environnement (ou dans server/.env) :
- *   ONLINE_URL     = https://facturation-burkina.onrender.com (URL de la plateforme en ligne)
+ *   ONLINE_URL     = https://fasomarche.duckdns.org (URL de la plateforme en ligne)
  *   JWT_TOKEN     = Token Super Admin (voir ci-dessous comment l'obtenir)
  *
  * Comment obtenir le JWT_TOKEN :
@@ -29,7 +29,7 @@ if (!ONLINE_URL || !JWT_TOKEN) {
   console.error(`
 ❌ Variables manquantes. Ajoutez dans server/.env :
 
-  ONLINE_URL=https://facturation-burkina.onrender.com
+  ONLINE_URL=https://fasomarche.duckdns.org
   JWT_TOKEN=votre_token_super_admin
 
 Pour obtenir le token :

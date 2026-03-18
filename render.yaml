@@ -1,8 +1,12 @@
 # Configuration Render pour FACTURATION-BURKINA (FasoMarchés)
 # https://render.com/docs/blueprint-spec
 #
-# IMPORTANT : Liez la base PostgreSQL (FACTURATION) au service via le dashboard Render
-# pour que DATABASE_URL soit défini automatiquement (Add from Render).
+# Les données persistent grâce à PostgreSQL. Sans PostgreSQL, SQLite est utilisé
+# et les données sont EFFACÉES à chaque déploiement (disque éphémère).
+
+databases:
+  - name: facturation-db
+    plan: free
 
 services:
   - type: web
@@ -23,3 +27,7 @@ services:
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 7d
+      - key: DATABASE_URL
+        fromDatabase:
+          name: facturation-db
+          property: connectionString

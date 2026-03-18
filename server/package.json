@@ -16,7 +16,11 @@
     "db:fix-mercuriale-prices": "node scripts/fix-mercuriale-prices.js",
     "db:inspect-factures": "node scripts/inspect-factures.js",
     "db:restore-facture-prices": "node scripts/restore-facture-prices.js",
-    "sync:mercuriale-online": "node scripts/sync-mercuriale-to-online.js"
+    "sync:mercuriale-online": "node scripts/sync-mercuriale-to-online.js",
+    "sync:entreprises-online": "node scripts/sync-entreprises-to-online.js",
+    "sync:entreprises-donnees-online": "node scripts/sync-entreprises-donnees-to-online.js",
+    "list:credentials": "node scripts/list-company-credentials.js",
+    "sync:all-online": "node scripts/sync-all-to-online.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

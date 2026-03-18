@@ -599,7 +599,7 @@ const MercurialeView = ({ onAddToInvoice }) => {
           <input
             type="text"
             placeholder="Rechercher par nom ou code..."
-            className="pl-10 pr-4 py-2 border border-faso-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-full text-sm"
+            className="pl-10 pr-4 py-2 border border-faso-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-full text-sm bg-white text-faso-text-800 placeholder:text-faso-text-400"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -1649,7 +1649,7 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
                     <input
                       type="text"
                       placeholder={`Code ou désignation (ex: 03.1.1, agenda, rame...)`}
-                      className="w-full pl-10 pr-4 py-2.5 border border-faso-border rounded-lg focus:ring-2 focus:ring-faso-primary focus:border-transparent outline-none text-sm"
+                      className="w-full pl-10 pr-4 py-2.5 border border-faso-border rounded-lg focus:ring-2 focus:ring-faso-primary focus:border-transparent outline-none text-sm bg-white text-faso-text-800 placeholder:text-faso-text-400"
                       value={searchArticle}
                       onChange={(e) => { setSearchArticle(e.target.value); setShowSuggestions(true); }}
                       onFocus={() => searchArticle.trim().length >= 1 && setShowSuggestions(true)}
@@ -2256,7 +2256,7 @@ const SimulationView = ({ mercurialeArticles: mercurialeArticlesProp = [] }) => 
               </div>
               <div className="relative mb-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-faso-text-400" size={18} />
-                <input type="text" value={searchArticle} onChange={(e) => setSearchArticle(e.target.value)} placeholder="Rechercher un article du mercurial (code ou désignation)..." className="w-full pl-10 pr-4 py-2 border border-faso-border rounded-lg focus:ring-2 focus:ring-faso-primary outline-none text-sm" />
+                <input type="text" value={searchArticle} onChange={(e) => setSearchArticle(e.target.value)} placeholder="Rechercher un article du mercurial (code ou désignation)..." className="w-full pl-10 pr-4 py-2 border border-faso-border rounded-lg focus:ring-2 focus:ring-faso-primary outline-none text-sm bg-white text-faso-text-800 placeholder:text-faso-text-400" />
                 {suggestions.length > 0 && (
                   <ul className="absolute z-20 left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-auto">
                     {suggestions.map((art) => (
