@@ -44,13 +44,14 @@ app.use(helmet({ contentSecurityPolicy: false })); // CSP désactivé pour compa
 const corsOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim()) : true;
 app.use(cors({ origin: corsOrigins, credentials: true }));
 
-// Rate limiting global (200 req/15min par IP)
+// Rate limiting global (200 req/15min par IP) — /api/health exclu (sondé par le frontend)
 app.use('/api', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   message: { error: 'Trop de requêtes. Réessayez dans quelques minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.path === '/health',
 }));
 
 // Rate limiting assistant public (10 req/15 min par IP, pour prospects)
