@@ -1,11 +1,11 @@
-# Synchroniser les mercuriales locales vers la plateforme en ligne
+# Synchroniser les données locales vers la plateforme en ligne
 
-Ce guide explique comment transférer les mercuriales que vous avez importées en local vers la plateforme déployée (Render).
+Ce guide explique comment transférer les mercuriales et les entreprises de votre base locale vers la plateforme déployée (Render).
 
 ## Prérequis
 
 - LANCER.bat a été utilisé pour importer des mercuriales (CSV, Word) en local
-- La plateforme en ligne est déployée et accessible (ex. https://facturation-burkina.onrender.com)
+- La plateforme en ligne est déployée et accessible (ex. https://fasomarche.duckdns.org ou https://facturation-burkina.onrender.com)
 - Vous avez un compte Super Admin (admin@plateforme.com)
 
 ## Étapes
@@ -24,7 +24,7 @@ Ce guide explique comment transférer les mercuriales que vous avez importées e
 Ouvrez `server/.env` et ajoutez :
 
 ```
-ONLINE_URL=https://facturation-burkina.onrender.com
+ONLINE_URL=https://fasomarche.duckdns.org
 JWT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -32,26 +32,58 @@ Remplacez l’URL par celle de votre plateforme et collez le token copié.
 
 ### 3. Lancer la synchronisation
 
-Dans un terminal, à la racine du projet :
+**Mercuriales uniquement :**
 
 ```bash
 cd server
 npm run sync:mercuriale-online
 ```
 
-Ou directement :
+**Entreprises uniquement :**
 
 ```bash
 cd server
-node scripts/sync-mercuriale-to-online.js
+npm run sync:entreprises-online
+```
+
+**Tout (mercuriales + entreprises + données) :**
+
+```bash
+cd server
+npm run sync:all-online
+```
+
+**Entreprises avec leurs données (clients, marchés, factures, quittances) :**
+
+```bash
+cd server
+npm run sync:entreprises-donnees-online
 ```
 
 ### 4. Résultat
 
-Le script affiche le nombre d’articles synchronisés par région. Les mercuriales locales (template) sont envoyées vers la plateforme en ligne.
+- **Mercuriales** : le script affiche le nombre d’articles synchronisés par région.
+- **Entreprises** : chaque entreprise locale (hors template) est créée en ligne avec son admin et ses mercuriales copiées. Mot de passe temporaire : `ChangeMe123!` — les utilisateurs devront le changer à la première connexion.
+- **Données** (avec `sync:entreprises-donnees-online` ou `sync:all-online`) : clients, marchés, factures et quittances sont également synchronisés pour chaque entreprise.
+
+### 5. Accéder aux comptes synchronisés
+
+Les comptes synchronisés existent **uniquement sur la plateforme en ligne**. Ne vous connectez **pas** sur localhost.
+
+1. Ouvrez **https://fasomarche.duckdns.org** (ou votre URL de plateforme)
+2. Utilisez l'**email admin** de chaque entreprise
+3. Mot de passe temporaire : **`ChangeMe123!`**
+4. Changez le mot de passe à la première connexion
+
+Pour afficher les identifiants de toutes les entreprises :
+
+```bash
+cd server
+npm run list:credentials
+```
 
 ## Notes
 
 - **Token expiré** : Le JWT expire après 7 jours. En cas d’erreur 401, reconnectez-vous en ligne et récupérez un nouveau token.
-- **Régions** : Seules les régions ayant des articles en local sont synchronisées.
-- **Remplacement** : Les données en ligne sont remplacées par celles du local pour chaque région synchronisée.
+- **Mercuriales** : Seules les régions ayant des articles en local sont synchronisées. Les données en ligne sont remplacées par celles du local.
+- **Entreprises** : Les entreprises déjà présentes en ligne (même email) sont ignorées. Ordre recommandé : lancer d'abord `sync:mercuriale-online`, puis `sync:entreprises-donnees-online` (ou `sync:all-online` pour tout faire).
