@@ -30,7 +30,9 @@ COPY convertisseur.py ./convertisseur.py
 WORKDIR /app/server
 
 # Installer les dépendances du serveur et générer le client Prisma
-RUN npm ci --omit=dev --legacy-peer-deps && npx prisma generate
+RUN sed -i 's/binaryTargets = .*/binaryTargets = ["linux-musl-openssl-3.0.x"]/' prisma/schema.prisma && \
+    npm ci --omit=dev --legacy-peer-deps && \
+    npx prisma generate
 
 # Créer les dossiers pour les uploads (DAO, archives)
 RUN mkdir -p uploads/dao uploads/archives
