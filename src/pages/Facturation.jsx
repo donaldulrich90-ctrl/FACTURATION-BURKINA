@@ -68,6 +68,22 @@ import Badge from '../components/ui/Badge';
 import { parseMercurialeCsv } from '../utils/importMercurialeCsv';
 import { extractAndParseDocx } from '../utils/docxExtract';
 
+// Tous les onglets (IDs alignés avec CompanyAdmin TASKS) — filtrage par rôle, assignedTasks et abonnement
+const ALL_APP_TABS = [
+  { id: 'dashboard', icon: LayoutDashboard, label: "Tableau de bord" },
+  { id: 'appels-offres', icon: BookOpen, label: "Appels d'Offres BF" },
+  { id: 'simulation', icon: Calculator, label: 'Simulation & estimation' },
+  { id: 'mercuriale', icon: Search, label: 'Mercuriale Prix' },
+  { id: 'facturation', icon: FileText, label: 'Facturation' },
+  { id: 'suivi', icon: CheckCircle, label: 'Suivi Paiements' },
+  { id: 'documents-admin', icon: FolderSearch, label: 'Documents administratifs' },
+  { id: 'montage-dao', icon: FolderInput, label: 'Montage DAO' },
+  { id: 'rh', icon: Users, label: 'Gestion RH' },
+  { id: 'comptabilite', icon: Wallet, label: 'Gestion Comptabilité' },
+  { id: 'impots-droits', icon: Percent, label: 'Impôts & droits Burkina' },
+  { id: 'archives-marches', icon: Archive, label: 'Archives marchés exécutés' },
+];
+
 const MOCK_FACTURES = [
   { id: 'F-2024-001', client: 'Direction Générale des Impôts', date: '2024-04-10', montant: 450000, statut: 'Payée' },
   { id: 'F-2024-002', client: 'Mairie de Bobo-Dioulasso', date: '2024-05-02', montant: 1250000, statut: 'En attente' },
@@ -3821,6 +3837,57 @@ export default function Facturation() {
   const companyName = currentUser?.company?.name || 'Mon Entreprise';
   const companyLogoUrl = getCompanyEntete?.(currentUser?.companyId)?.logoUrl ?? currentUser?.company?.logoUrl;
 
+  // Onglets autorisés selon rôle, assignedTasks et abonnement
+  const allowedTabs = useMemo(() => {
+    const role = currentUser?.role;
+    if (role === 'super_admin') return ALL_APP_TABS.map((t) => t.id);
+
+    const sub = currentUser?.subscription || currentUser?.company?.subscriptions?.[0];
+    const subFeatures = (() => {
+      const f = sub?.features;
+      if (!f) return null;
+      try {
+        return Array.isArray(f) ? f : (typeof f === 'string' ? JSON.parse(f) : []);
+      } catch {
+        return null;
+      }
+    })();
+    // Mapping plan features → tab IDs (marches→simulation+archives-marches, archives→archives-marches, impots→impots-droits)
+    const featureToTabs = { marches: ['simulation', 'archives-marches'], archives: ['archives-marches'], impots: ['impots-droits'] };
+    const allowedBySub = subFeatures && subFeatures.length > 0
+      ? new Set(subFeatures.flatMap((x) => featureToTabs[x] || [x]))
+      : null;
+
+    if (role === 'company_admin') {
+      if (!allowedBySub) return ALL_APP_TABS.map((t) => t.id);
+      const adminTabs = ALL_APP_TABS.filter((t) => allowedBySub.has(t.id)).map((t) => t.id);
+      return adminTabs.includes('dashboard') ? adminTabs : ['dashboard', ...adminTabs];
+    }
+
+    if (role === 'company_user') {
+      const raw = currentUser?.assignedTasks;
+      let tasks = [];
+      try {
+        tasks = Array.isArray(raw) ? raw : (typeof raw === 'string' && raw ? JSON.parse(raw) : []);
+      } catch {}
+      const allowedByTasks = tasks.length > 0 ? new Set(tasks) : null;
+      if (!allowedByTasks) return ['dashboard'];
+      let base = ALL_APP_TABS.filter((t) => allowedByTasks.has(t.id)).map((t) => t.id);
+      if (!base.includes('dashboard')) base = ['dashboard', ...base];
+      if (!allowedBySub) return base.length ? base : ['dashboard'];
+      const filtered = base.filter((id) => allowedBySub.has(id));
+      return filtered.length ? filtered : ['dashboard'];
+    }
+
+    return ['dashboard'];
+  }, [currentUser?.role, currentUser?.assignedTasks, currentUser?.subscription, currentUser?.company?.subscriptions]);
+
+  // Rediriger si l'onglet actif n'est pas autorisé
+  useEffect(() => {
+    if (allowedTabs.includes(activeTab)) return;
+    setActiveTab(allowedTabs[0] || 'dashboard');
+  }, [activeTab, allowedTabs]);
+
   // Agrégation des articles mercuriale de toutes les régions (dédupliqués par code+conditionnement) pour la recherche
   const mercurialeArticles = useMemo(() => {
     const seen = new Set();
@@ -3872,6 +3939,8 @@ export default function Facturation() {
     );
   };
 
+  const visibleTabs = ALL_APP_TABS.filter((t) => allowedTabs.includes(t.id));
+
   return (
     <div className="flex min-h-screen min-h-[100dvh] h-screen bg-faso-bg-light dark:bg-faso-bg font-sans text-faso-text-primary dark:text-white overflow-x-hidden">
       <aside className="hidden md:flex flex-col w-72 bg-gradient-to-b from-faso-sidebar-start to-faso-sidebar-end text-white p-4 shadow-xl z-20">
@@ -3879,18 +3948,9 @@ export default function Facturation() {
           <BrandingBlock variant="compact" showFooter={false} />
         </div>
         <nav className="flex-1 min-h-0 overflow-y-auto space-y-1.5">
-          <NavItem id="dashboard" icon={LayoutDashboard} label="Tableau de bord" />
-          <NavItem id="appels-offres" icon={BookOpen} label="Appels d'Offres BF" />
-          <NavItem id="simulation" icon={Calculator} label="Simulation & estimation" />
-          <NavItem id="mercuriale" icon={Search} label="Mercuriale Prix" />
-          <NavItem id="facturation" icon={FileText} label="Facturation" />
-          <NavItem id="suivi" icon={CheckCircle} label="Suivi Paiements" />
-          <NavItem id="documents-admin" icon={FolderSearch} label="Documents administratifs" />
-          <NavItem id="montage-dao" icon={FolderInput} label="Montage DAO" />
-          <NavItem id="rh" icon={Users} label="Gestion RH" />
-          <NavItem id="comptabilite" icon={Wallet} label="Gestion Comptabilité" />
-          <NavItem id="impots-droits" icon={Percent} label="Impôts & droits Burkina" />
-          <NavItem id="archives-marches" icon={Archive} label="Archives marchés exécutés" />
+          {visibleTabs.map((t) => (
+            <NavItem key={t.id} id={t.id} icon={t.icon} label={t.label} />
+          ))}
           <Link to="/quittances" className="flex items-center space-x-3 w-full p-3 rounded-faso-lg transition-all duration-300 text-white/70 hover:bg-white/10 hover:text-white hover:translate-x-0.5">
             <FileCheck size={20} />
             <span className="font-medium">Quittances QSL</span>
@@ -3976,18 +4036,9 @@ export default function Facturation() {
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-faso-text-secondary hover:text-white shrink-0 ml-2"><X size={28} /></button>
             </div>
             <nav className="flex-1 space-y-3 min-h-0 overflow-y-auto">
-              <NavItem id="dashboard" icon={LayoutDashboard} label="Tableau de bord" />
-              <NavItem id="appels-offres" icon={BookOpen} label="Appels d'Offres BF" />
-              <NavItem id="simulation" icon={Calculator} label="Simulation & estimation" />
-              <NavItem id="mercuriale" icon={Search} label="Mercuriale Prix" />
-              <NavItem id="facturation" icon={FileText} label="Facturation" />
-              <NavItem id="suivi" icon={CheckCircle} label="Suivi Paiements" />
-              <NavItem id="documents-admin" icon={FolderSearch} label="Documents administratifs" />
-              <NavItem id="montage-dao" icon={FolderInput} label="Montage DAO" />
-              <NavItem id="rh" icon={Users} label="Gestion RH" />
-              <NavItem id="comptabilite" icon={Wallet} label="Gestion Comptabilité" />
-              <NavItem id="impots-droits" icon={Percent} label="Impôts & droits Burkina" />
-              <NavItem id="archives-marches" icon={Archive} label="Archives marchés exécutés" />
+              {visibleTabs.map((t) => (
+                <NavItem key={t.id} id={t.id} icon={t.icon} label={t.label} />
+              ))}
               <Link to="/quittances" className="flex items-center space-x-3 w-full p-3 rounded-lg transition-all text-white/70 hover:bg-white/10 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
                 <FileCheck size={20} />
                 <span className="font-medium">Quittances QSL</span>
