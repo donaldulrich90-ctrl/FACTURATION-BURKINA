@@ -1,5 +1,5 @@
 # ========== Étape 1 : Build du frontend React ==========
-FROM node:20-alpine AS frontend-builder
+FROM node:20-slim AS frontend-builder
 
 WORKDIR /app
 
@@ -12,11 +12,13 @@ COPY . .
 RUN npm run build
 
 # ========== Étape 2 : Image finale ==========
-FROM node:20-alpine
+FROM node:20-slim
 
 # Python pour convertisseur.py (extraction Word mercuriale) + wget pour healthcheck
-RUN apk add --no-cache python3 py3-pip wget && \
-    pip3 install --break-system-packages python-docx pandas tqdm 2>/dev/null || true
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --break-system-packages python-docx pandas tqdm 2>/dev/null || true
 
 WORKDIR /app
 
@@ -30,9 +32,7 @@ COPY convertisseur.py ./convertisseur.py
 WORKDIR /app/server
 
 # Installer les dépendances du serveur et générer le client Prisma
-RUN sed -i 's/binaryTargets = .*/binaryTargets = ["linux-musl-openssl-3.0.x"]/' prisma/schema.prisma && \
-    npm ci --omit=dev --legacy-peer-deps && \
-    npx prisma generate
+RUN npm ci --omit=dev --legacy-peer-deps && npx prisma generate
 
 # Créer les dossiers pour les uploads (DAO, archives)
 RUN mkdir -p uploads/dao uploads/archives
