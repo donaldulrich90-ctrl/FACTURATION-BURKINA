@@ -21,13 +21,16 @@ async function handleResponse(r) {
   return data;
 }
 
+const fetchOpts = { cache: 'no-store', credentials: 'same-origin' };
+
 export const api = {
   async healthCheck() {
-    const r = await fetch(`${API_BASE}/health`);
+    const r = await fetch(`${API_BASE}/health`, fetchOpts);
     return r.ok;
   },
   async login(email, password) {
     const r = await fetch(`${API_BASE}/auth/login`, {
+      ...fetchOpts,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
