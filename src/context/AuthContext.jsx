@@ -93,12 +93,19 @@ export function AuthProvider({ children }) {
       return { ok: true, user, redirect: path };
     } catch (err) {
       if (isSuperAdmin) {
+        const msg = (err?.message || '').toLowerCase();
+        if (msg.includes('trop de tentatives') || msg.includes('trop de requêtes')) {
+          throw err;
+        }
+        if (msg.includes('email') || msg.includes('mot de passe') || msg.includes('incorrect')) {
+          throw err;
+        }
         const h = (typeof window !== 'undefined' && window.location?.hostname || '').toLowerCase();
         const isProd = /duckdns|onrender|railway|\.com|\.org|\.net|\.bf/.test(h);
-        const msg = isProd
-          ? 'Serveur inaccessible. La plateforme peut être en veille — attendez 30 à 60 secondes puis réessayez. Testez /api/health dans le navigateur.'
+        const fallback = isProd
+          ? 'Serveur inaccessible. Vérifiez https://' + (window?.location?.hostname || '') + '/api/health'
           : 'Serveur inaccessible. Lancez LANCER.bat, attendez 10 secondes puis réessayez.';
-        throw new Error(msg);
+        throw new Error(fallback);
       }
       const local = loginLocal(emailTrim, passwordTrim, companies, users, subscriptions);
       if (local) {

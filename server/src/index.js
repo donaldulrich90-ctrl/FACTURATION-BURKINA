@@ -63,10 +63,10 @@ app.use('/api/assistant/public', rateLimit({
   legacyHeaders: false,
 }));
 
-// Rate limiting strict sur le login (5 tentatives / 15 min)
+// Rate limiting sur le login (20 tentatives / 15 min)
 app.use('/api/auth/login', rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 20,
   message: { error: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
