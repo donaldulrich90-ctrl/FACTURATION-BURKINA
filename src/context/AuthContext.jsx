@@ -93,7 +93,12 @@ export function AuthProvider({ children }) {
       return { ok: true, user, redirect: path };
     } catch (err) {
       if (isSuperAdmin) {
-        throw new Error('Serveur inaccessible. Lancez LANCER.bat, attendez 10 secondes puis réessayez.');
+        const h = (typeof window !== 'undefined' && window.location?.hostname || '').toLowerCase();
+        const isProd = /duckdns|onrender|railway|\.com|\.org|\.net|\.bf/.test(h);
+        const msg = isProd
+          ? 'Serveur inaccessible. La plateforme peut être en veille — attendez 30 à 60 secondes puis réessayez. Testez /api/health dans le navigateur.'
+          : 'Serveur inaccessible. Lancez LANCER.bat, attendez 10 secondes puis réessayez.';
+        throw new Error(msg);
       }
       const local = loginLocal(emailTrim, passwordTrim, companies, users, subscriptions);
       if (local) {

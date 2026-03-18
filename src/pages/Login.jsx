@@ -7,6 +7,13 @@ import { api } from '../api/client';
 import BrandingBlock, { BrandingFooter } from '../components/BrandingBlock';
 import AssistantWidgetPublic from '../components/AssistantWidgetPublic';
 
+const isLocalhost = () => {
+  if (typeof window === 'undefined') return false;
+  const h = (window.location?.hostname || '').toLowerCase();
+  if (/duckdns|onrender|railway|\.com|\.org|\.net|\.bf/.test(h)) return false;
+  return /^localhost$|^127\.0\.0\.1$/.test(h);
+};
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -80,11 +87,21 @@ export default function Login() {
                 <div className="flex items-start gap-3">
                   <XCircle className="text-faso-statut-attente shrink-0 mt-0.5" size={24} />
                   <div className="flex-1 min-w-0">
+                    {isLocalhost() ? (
+                    <>
                     <p className="font-medium text-faso-statut-attente">Serveur non démarré</p>
                     <p className="text-sm text-faso-text-secondary mt-1">1. Double-cliquez sur <strong>LANCER.bat</strong> dans le dossier du projet</p>
                     <p className="text-sm text-faso-text-secondary mt-0.5">2. Attendez 10 secondes que la fenêtre « FasoMarches - API + Frontend » s’ouvre</p>
                     <p className="text-sm text-faso-text-secondary mt-0.5">3. Le navigateur s’ouvrira automatiquement sur la plateforme</p>
                     <p className="text-xs text-faso-text-secondary mt-2">Connexion 4G : utilisez le même ordinateur où LANCER.bat tourne. Depuis un téléphone en 4G, la plateforme locale n’est pas accessible.</p>
+                    </>
+                    ) : (
+                    <>
+                    <p className="font-medium text-faso-statut-attente">Plateforme en cours de démarrage</p>
+                    <p className="text-sm text-faso-text-secondary mt-1">La plateforme est peut-être en veille. Attendez <strong>30 à 60 secondes</strong> puis cliquez sur « Réessayer la connexion ».</p>
+                    <p className="text-xs text-faso-text-secondary mt-2">Sur l'offre gratuite, le serveur se met en veille après une période d'inactivité. La première connexion peut prendre jusqu'à 1 minute.</p>
+                    </>
+                    )}
                     <button
                       type="button"
                       onClick={() => checkServer()}
@@ -142,7 +159,7 @@ export default function Login() {
           </form>
 
           <p className="mt-6 text-center text-white/60 text-xs">
-            Lancez LANCER.bat avant de vous connecter.
+            {isLocalhost() ? 'Lancez LANCER.bat avant de vous connecter.' : 'Attendez 30 à 60 secondes si la plateforme est en veille.'}
           </p>
           </div>
         </div>
