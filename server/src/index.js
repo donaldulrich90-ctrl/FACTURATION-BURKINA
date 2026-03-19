@@ -31,6 +31,7 @@ import appelsOffresRoutes from './routes/appelsOffres.js';
 import chatRoutes from './routes/chat.js';
 import announcementsRoutes from './routes/announcements.js';
 import assistantRoutes from './routes/assistant.js';
+import auditLogsRoutes from './routes/auditLogs.js';
 import { initSocket } from './socket.js';
 
 const app = express();
@@ -92,6 +93,7 @@ app.use('/api/appels-offres', appelsOffresRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/announcements', announcementsRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/audit-logs', auditLogsRoutes);
 
 // 404 pour les routes API non trouvées (après toutes les routes connues)
 app.use('/api', (req, res) => {

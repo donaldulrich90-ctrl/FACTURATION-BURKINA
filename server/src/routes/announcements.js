@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -48,6 +49,7 @@ router.post('/', authMiddleware, requireRole('company_admin'), async (req, res) 
         createdBy: { select: { id: true, name: true } },
       },
     });
+    await logFromRequest(req, 'create', 'announcement', ann.id, { title: ann.title });
     res.status(201).json(ann);
   } catch (err) {
     console.error('Announcement create:', err);
@@ -61,9 +63,11 @@ router.delete('/:id', authMiddleware, requireRole('company_admin'), async (req, 
   const { id } = req.params;
   if (!companyId) return res.status(403).json({ error: 'Entreprise requise' });
   try {
+    const ann = await prisma.announcement.findFirst({ where: { id, companyId }, select: { title: true } });
     await prisma.announcement.deleteMany({
       where: { id, companyId },
     });
+    await logFromRequest(req, 'delete', 'announcement', id, { title: ann?.title });
     res.status(204).send();
   } catch (err) {
     console.error('Announcement delete:', err);

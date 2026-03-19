@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../middleware/auth.js';
+import { logAudit } from '../services/auditLog.js';
 
 const router = Router();
 
@@ -45,9 +46,15 @@ router.post('/login',
       },
     });
 
-    if (!user) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    if (!user) {
+      await logAudit({ action: 'login_failed', entity: 'auth', details: { email: emailNorm, reason: 'user_not_found' }, ipAddress: req.ip, userAgent: req.headers?.['user-agent'] });
+      return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    }
     const ok = await bcrypt.compare(passwordStr, user.password);
-    if (!ok) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    if (!ok) {
+      await logAudit({ userId: user.id, companyId: user.companyId, action: 'login_failed', entity: 'auth', details: { email: emailNorm, reason: 'wrong_password' }, ipAddress: req.ip, userAgent: req.headers?.['user-agent'] });
+      return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    }
 
     const subscription = user.company?.subscriptions?.[0];
     const endDate = subscription ? new Date(subscription.endDate) : null;
@@ -59,6 +66,7 @@ router.post('/login',
       { expiresIn: JWT_EXPIRES }
     );
 
+    await logAudit({ userId: user.id, companyId: user.companyId, action: 'login', entity: 'auth', details: { email: user.email }, ipAddress: req.ip, userAgent: req.headers?.['user-agent'] });
     const { password: _, ...safeUser } = user;
     res.json({
       token,
@@ -108,6 +116,7 @@ router.post('/change-password',
       where: { id: req.userId },
       data: { password: hashed },
     });
+    await logAudit({ userId: req.userId, companyId: req.companyId, action: 'update', entity: 'user', entityId: req.userId, details: { field: 'password' }, ipAddress: req.ip, userAgent: req.headers?.['user-agent'] });
 
     res.json({ ok: true, message: 'Mot de passe modifié avec succès' });
   } catch (e) {

@@ -100,6 +100,11 @@ export const api = {
     });
     return handleResponse(r);
   },
+  async getAuditLogs(params = {}) {
+    const q = new URLSearchParams(params).toString();
+    const r = await fetch(`${API_BASE}/audit-logs${q ? `?${q}` : ''}`, { headers: getHeaders() });
+    return handleResponse(r);
+  },
   async deleteCompanyUser(companyId, userId) {
     const r = await fetch(`${API_BASE}/companies/${companyId}/users/${userId}`, {
       method: 'DELETE',

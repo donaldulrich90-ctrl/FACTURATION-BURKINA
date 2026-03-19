@@ -26,6 +26,7 @@ model Company {
 
   users        User[]
   subscriptions Subscription[]
+  auditLogs   AuditLog[]
   factures     Facture[]
   quittances   Quittance[]
   marches         Marche[]
@@ -114,6 +115,7 @@ model User {
   company   Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   factures  Facture[]
   quittances Quittance[]
+  auditLogs AuditLog[]
   chatSent  ChatMessage[] @relation("ChatSender")
   chatReceived ChatMessage[] @relation("ChatReceiver")
   announcements Announcement[]
@@ -326,6 +328,27 @@ model FactureItem {
   createdAt   DateTime @default(now())
 
   facture Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+}
+
+// Journal d'audit : trace de chaque action sur la plateforme
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?  // null si action non authentifiée (ex: login échoué)
+  companyId  String?  // null pour super_admin ou actions globales
+  action     String   // create, update, delete, login, login_failed
+  entity     String   // facture, user, company, client, marche, quittance, etc.
+  entityId   String?  // id de l'entité concernée
+  details    String?  // JSON : résumé ou données avant/après
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
+  @@index([userId, createdAt])
+  @@index([entity, entityId])
 }
 
 // QSL - Quittance (coeur du système)

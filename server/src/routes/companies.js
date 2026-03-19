@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const router = Router();
 
@@ -64,6 +65,7 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     data,
     include: { subscriptions: true, users: { select: { id: true, name: true, email: true, phone: true, role: true, assignedTasks: true } } },
   });
+  await logFromRequest(req, 'update', 'company', id, { name: updated.name });
   res.json(updated);
 });
 
@@ -74,6 +76,7 @@ router.delete('/:id', authMiddleware, requireRole('super_admin'), async (req, re
     const company = await prisma.company.findUnique({ where: { id } });
     if (!company) return res.status(404).json({ error: 'Entreprise introuvable' });
     await prisma.company.delete({ where: { id } });
+    await logFromRequest(req, 'delete', 'company', id, { name: company.name });
     res.status(204).send();
   } catch (err) {
     console.error('Erreur suppression entreprise:', err);
@@ -102,13 +105,16 @@ router.patch('/:companyId/users/:userId', authMiddleware, requireRole('super_adm
   });
   if (user.count === 0) return res.status(404).json({ error: 'Utilisateur introuvable' });
   const updated = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true, email: true, phone: true, role: true, assignedTasks: true } });
+  await logFromRequest(req, 'update', 'user', userId, { email: updated?.email });
   res.json(updated);
 });
 
 router.delete('/:companyId/users/:userId', authMiddleware, requireRole('super_admin', 'company_admin'), async (req, res) => {
   const { companyId, userId } = req.params;
   if (req.role === 'company_admin' && companyId !== req.companyId) return res.status(403).json({ error: 'Accès refusé' });
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
   await prisma.user.deleteMany({ where: { id: userId, companyId } });
+  await logFromRequest(req, 'delete', 'user', userId, { email: u?.email });
   res.status(204).send();
 });
 
@@ -197,6 +203,7 @@ router.post('/', authMiddleware, requireRole('super_admin'), async (req, res) =>
       where: { id: company.id },
       include: { subscriptions: true, users: { select: { id: true, name: true, email: true, phone: true, role: true, assignedTasks: true } } },
     });
+    await logFromRequest(req, 'create', 'company', company.id, { name: company.name, planType: planTypeCode });
     res.status(201).json(full);
   } catch (err) {
     if (err?.code === 'P2002') {
@@ -229,6 +236,7 @@ router.post('/:companyId/users', authMiddleware, requireRole('super_admin', 'com
       data: { name, email: email.trim().toLowerCase(), password: hashed, role: userRole, companyId: targetCompanyId, assignedTasks: tasksJson, phone: phone ? String(phone).trim() : null },
     });
     const { password: _, ...safe } = user;
+    await logFromRequest(req, 'create', 'user', user.id, { email: user.email, role: userRole });
     res.status(201).json(safe);
   } catch (err) {
     if (err?.code === 'P2002' && err?.meta?.target?.includes('email')) {

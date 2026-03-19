@@ -14,6 +14,7 @@ import {
   Upload,
   Trash2,
   MapPin,
+  History,
   FileSpreadsheet,
   Download,
   Pencil,
@@ -25,6 +26,7 @@ import { api } from '../api/client';
 import { REGIONS_BURKINA } from '../data/mercurialeRegions';
 import { parseMercurialeCsv, CSV_TEMPLATE } from '../utils/importMercurialeCsv';
 import { extractAndParseDocx } from '../utils/docxExtract';
+import AuditLogView from '../components/AuditLogView';
 
 const statusStyles = {
   active: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -542,6 +544,15 @@ export default function SuperAdmin() {
           >
             Mercuriales par région
           </button>
+          {apiMode && (
+            <button
+              onClick={() => setActiveTab('audit')}
+              className={`px-4 py-2 font-medium rounded-t-lg transition-colors ${activeTab === 'audit' ? 'bg-white border border-b-0 border-gray-200 text-faso-primary -mb-px' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <History size={16} className="inline mr-1 -mt-0.5" />
+              Journal d'audit
+            </button>
+          )}
         </div>
 
         {activeTab === 'forfaits' && (
@@ -976,6 +987,18 @@ export default function SuperAdmin() {
                 {importResult.message}
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'audit' && apiMode && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Journal d'audit</h2>
+              <p className="text-gray-500 text-sm mt-1">Trace de toutes les actions effectuées sur la plateforme (créations, modifications, suppressions, connexions).</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <AuditLogView showCompany />
+            </div>
           </div>
         )}
       </main>

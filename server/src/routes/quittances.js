@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -86,6 +87,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
     where: { id: factureId },
     data: { statut: 'payee' },
   });
+  await logFromRequest(req, 'create', 'quittance', quittance.id, { numero: quittance.numero, factureId, montant: quittance.montant });
   res.status(201).json(quittance);
 });
 

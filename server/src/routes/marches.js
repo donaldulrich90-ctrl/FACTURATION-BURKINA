@@ -5,6 +5,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOADS_DIR = path.join(__dirname, '../../uploads/dao');
@@ -96,6 +97,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
     },
     include: { region: true, depenses: true },
   });
+  await logFromRequest(req, 'create', 'marche', marche.id, { reference: marche.reference, titre: marche.titre });
   res.status(201).json(marche);
 });
 
@@ -120,6 +122,7 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     data,
     include: { region: true, depenses: true, factures: true },
   });
+  await logFromRequest(req, 'update', 'marche', id, { reference: updated.reference });
   res.json(updated);
 });
 
@@ -137,6 +140,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     } catch (_) {}
   }
   await prisma.marche.delete({ where: { id } });
+  await logFromRequest(req, 'delete', 'marche', id, { reference: marche.reference });
   res.status(204).send();
 });
 
@@ -165,6 +169,7 @@ router.post('/:id/dao', authMiddleware, requireRole('company_admin', 'company_us
     where: { id },
     include: { region: true, depenses: true, factures: true },
   });
+  await logFromRequest(req, 'update', 'marche', id, { action: 'upload_dao', fileName });
   res.json(updated);
 });
 
@@ -220,6 +225,7 @@ router.post('/:id/depenses', authMiddleware, requireRole('company_admin', 'compa
       dateDepense: dateDepense ? new Date(dateDepense) : undefined,
     },
   });
+  await logFromRequest(req, 'create', 'marche_depense', depense.id, { marcheId: id, libelle: depense.libelle, montant: depense.montant });
   res.status(201).json(depense);
 });
 
@@ -231,6 +237,7 @@ router.delete('/:id/depenses/:depenseId', authMiddleware, async (req, res) => {
     return res.status(403).json({ error: 'Accès refusé' });
   }
   await prisma.marcheDepense.delete({ where: { id: depenseId } });
+  await logFromRequest(req, 'delete', 'marche_depense', depenseId, { marcheId: id });
   res.status(204).send();
 });
 

@@ -5,6 +5,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOADS_ARCHIVES = path.join(__dirname, '../../uploads/archives');
@@ -78,6 +79,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
     },
     include: { documents: true },
   });
+  await logFromRequest(req, 'create', 'archive_marche', archive.id, { reference: archive.reference, titre: archive.titre });
   res.status(201).json(archive);
 });
 
@@ -117,6 +119,7 @@ router.patch('/:id', authMiddleware, requireRole('company_admin', 'company_user'
     data,
     include: { documents: true },
   });
+  await logFromRequest(req, 'update', 'archive_marche', id, { reference: updated.reference });
   res.json(updated);
 });
 
@@ -138,6 +141,7 @@ router.delete('/:id', authMiddleware, requireRole('company_admin', 'super_admin'
     }
   }
   await prisma.marcheArchive.delete({ where: { id } });
+  await logFromRequest(req, 'delete', 'archive_marche', id, { reference: archive.reference });
   res.status(204).send();
 });
 
@@ -165,6 +169,7 @@ router.post('/:id/documents', authMiddleware, requireRole('company_admin', 'comp
     where: { id },
     include: { documents: true },
   });
+  await logFromRequest(req, 'create', 'archive_document', doc.id, { archiveId: id, fileName });
   res.status(201).json(updated);
 });
 
@@ -204,6 +209,7 @@ router.delete('/:id/documents/:docId', authMiddleware, requireRole('company_admi
     try { fs.unlinkSync(fullPath); } catch (_) {}
   }
   await prisma.marcheArchiveDocument.delete({ where: { id: docId } });
+  await logFromRequest(req, 'delete', 'archive_document', docId, { archiveId: id, fileName: doc.fileName });
   const updated = await prisma.marcheArchive.findUnique({
     where: { id },
     include: { documents: true },

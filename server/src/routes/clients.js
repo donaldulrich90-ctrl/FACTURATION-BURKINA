@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -48,6 +49,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
       address: address?.trim() ?? undefined,
     },
   });
+  await logFromRequest(req, 'create', 'client', client.id, { name: client.name });
   res.status(201).json(client);
 });
 

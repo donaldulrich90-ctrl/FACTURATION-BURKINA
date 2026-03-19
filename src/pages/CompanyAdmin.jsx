@@ -21,6 +21,7 @@ import CompanyInfoBar from '../components/CompanyInfoBar';
 import { useTheme } from '../context/ThemeContext';
 import { api } from '../api/client';
 import { compressImageForStorage } from '../utils/imageCompress';
+import AuditLogView from '../components/AuditLogView';
 
 export default function CompanyAdmin() {
   const { currentUser, logout, refreshUser, apiMode, getCompanyUsers, getCompanySubscription, updateCompanyLocal, getCompanyEntete, openChangePasswordModal } = useAuth();
@@ -509,6 +510,17 @@ export default function CompanyAdmin() {
             </div>
           )}
         </div>
+
+        {apiMode && (
+          <div className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+            <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
+              <FileText size={20} className="text-faso-primary" />
+              Journal d'audit
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">Trace des actions effectuées par les utilisateurs de votre entreprise.</p>
+            <AuditLogView showCompany={false} />
+          </div>
+        )}
       </main>
 
       {showModal && (

@@ -610,19 +610,19 @@ const MercurialeView = ({ onAddToInvoice }) => {
             {importResult.message}
           </div>
         )}
-        <div className="relative flex-1 sm:flex-none max-w-md">
-          <Search className="absolute left-3 top-2.5 text-faso-text-400" size={18} />
-          <input
-            type="text"
-            placeholder="Rechercher par nom ou code..."
-            className="pl-10 pr-4 py-2 border border-faso-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-full text-sm bg-white text-faso-text-800 placeholder:text-faso-text-400"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
       </div>
-      <div className="bg-white rounded-xl shadow-sm border border-faso-border max-w-7xl mx-auto overflow-hidden">
+      <div className="bg-white dark:bg-faso-bg rounded-xl shadow-sm border border-faso-border max-w-7xl mx-auto overflow-hidden">
         <div className="overflow-auto max-h-[calc(100vh-220px)]">
+          <div className="sticky top-0 z-30 flex items-center gap-3 p-3 pb-2 bg-white dark:bg-faso-bg border-b border-faso-border shrink-0">
+            <Search className="text-faso-text-400 shrink-0" size={18} />
+            <input
+              type="text"
+              placeholder="Rechercher par nom ou code..."
+              className="flex-1 min-w-0 pl-2 pr-4 py-2 border border-faso-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm bg-white dark:bg-faso-bg text-faso-text-800 placeholder:text-faso-text-400"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
           <table className={`w-full min-w-[800px] text-left border-collapse ${vueCompacte ? 'text-xs' : 'text-sm'}`}>
             <colgroup>
               <col style={{ width: '10%', minWidth: 90 }} />
@@ -635,13 +635,13 @@ const MercurialeView = ({ onAddToInvoice }) => {
             </colgroup>
             <thead className="bg-faso-statut-attente-bg text-faso-statut-attente font-semibold text-xs uppercase tracking-wider [&_th]:align-top">
               <tr>
-                <th className={`sticky top-0 z-30 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 w-[14%] min-w-[140px] shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Code</th>
-                <th className={`sticky top-0 z-30 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 w-[27%] shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Désignation</th>
-                <th className={`sticky top-0 z-30 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 w-[13%] min-w-[110px] overflow-hidden shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Cond.</th>
-                <th className={`sticky top-0 z-30 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-right w-[11%] whitespace-nowrap font-bold shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Min</th>
-                <th className={`sticky top-0 z-30 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-right w-[11%] whitespace-nowrap font-bold shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Moyen</th>
-                <th className={`sticky top-0 z-30 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-right w-[11%] whitespace-nowrap font-bold shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Max</th>
-                <th className={`sticky top-0 z-30 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-center w-[14%] min-w-[160px] shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Action</th>
+                <th className={`sticky top-[56px] z-20 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 w-[14%] min-w-[140px] shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Code</th>
+                <th className={`sticky top-[56px] z-20 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 w-[27%] shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Désignation</th>
+                <th className={`sticky top-[56px] z-20 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 w-[13%] min-w-[110px] overflow-hidden shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Cond.</th>
+                <th className={`sticky top-[56px] z-20 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-right w-[11%] whitespace-nowrap font-bold shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Min</th>
+                <th className={`sticky top-[56px] z-20 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-right w-[11%] whitespace-nowrap font-bold shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Moyen</th>
+                <th className={`sticky top-[56px] z-20 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-right w-[11%] whitespace-nowrap font-bold shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Max</th>
+                <th className={`sticky top-[56px] z-20 bg-faso-statut-attente-bg border-b-2 border-faso-statut-attente/30 text-center w-[14%] min-w-[160px] shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] ${vueCompacte ? 'p-1.5' : 'p-4'}`}>Action</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -1304,8 +1304,8 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(220px,260px)_1fr] gap-4 lg:gap-6">
+        <div className="space-y-4 shrink-0">
           <Card className="border-t-4 border-t-faso-primary">
             <h3 className="font-bold text-faso-text-700 mb-4 flex items-center space-x-2 pb-2 border-b border-faso-border">
               <FileText size={18} className="text-faso-primary" />
@@ -1559,8 +1559,8 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
             </div>
           </Card>
         </div>
-        <div className="lg:col-span-2">
-          <Card className="h-full flex flex-col">
+        <div className="min-w-0 flex-1">
+          <Card className="h-full flex flex-col min-w-0">
             <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
               <h3 className="font-bold text-faso-text-700">Détails de la facture</h3>
               {docType !== 'spec_tech' && (
@@ -1639,7 +1639,7 @@ const InvoiceBuilder = ({ selectedMercurialeItem, clearSelection, mercurialeArti
               )
             ) : (
             <>
-            <div className="p-4 rounded-lg border border-faso-border bg-faso-hover-bg/30 mb-4">
+            <div className="sticky top-0 z-10 p-4 rounded-lg border border-faso-border bg-white dark:bg-faso-bg shadow-sm mb-4">
               <p className="text-sm font-medium text-faso-text-600 mb-3">
                 Recherche d'articles dans la mercuriale — <span className="font-semibold text-faso-primary">{(REGIONS_BURKINA.find((r) => r.id === factureRegionId)?.nom || factureRegionId)}</span>
               </p>
@@ -4050,8 +4050,8 @@ export default function Facturation() {
           </div>
         )}
 
-        <main ref={mainScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-8 scroll-smooth min-w-0">
-          <div key={activeTab} className="max-w-6xl mx-auto tab-content min-w-0 w-full">
+        <main ref={mainScrollRef} className={`flex-1 overflow-y-auto overflow-x-hidden scroll-smooth min-w-0 ${activeTab === 'facturation' ? 'p-2 sm:p-3 md:p-4' : 'p-3 sm:p-4 md:p-8'}`}>
+          <div key={activeTab} className={`mx-auto tab-content min-w-0 w-full ${activeTab === 'facturation' ? 'max-w-[1500px]' : 'max-w-6xl'}`}>
             {activeTab === 'dashboard' && <Dashboard onNavigateToTab={setActiveTab} />}
             {activeTab === 'appels-offres' && <AppelsOffresView />}
             {activeTab === 'simulation' && <SimulationView mercurialeArticles={mercurialeArticles} />}

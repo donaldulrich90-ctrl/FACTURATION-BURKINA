@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -71,6 +72,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
     },
     include: { articles: true },
   });
+  await logFromRequest(req, 'create', 'simulation', sim.id, { titre: sim.titre });
   res.status(201).json(sim);
 });
 
@@ -119,6 +121,7 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     where: { id },
     include: { articles: true, marche: true },
   });
+  await logFromRequest(req, 'update', 'simulation', id, { titre: updated.titre });
   res.json(updated);
 });
 
@@ -140,6 +143,7 @@ router.post('/:id/enregistrer', authMiddleware, requireRole('company_admin', 'co
       where: { id },
       include: { articles: true, marche: true },
     });
+    await logFromRequest(req, 'update', 'simulation', id, { action: 'enregistrer', marcheId: sim.marcheId });
     return res.json(updated);
   }
 
@@ -161,6 +165,7 @@ router.post('/:id/enregistrer', authMiddleware, requireRole('company_admin', 'co
     where: { id },
     include: { articles: true, marche: true },
   });
+  await logFromRequest(req, 'update', 'simulation', id, { action: 'enregistrer', marcheId: marche?.id });
   res.json(updated);
 });
 
@@ -172,6 +177,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     return res.status(403).json({ error: 'Accès refusé' });
   }
   await prisma.marcheSimulation.delete({ where: { id } });
+  await logFromRequest(req, 'delete', 'simulation', id, { titre: sim.titre });
   res.status(204).send();
 });
 

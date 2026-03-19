@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -183,6 +184,7 @@ router.post('/', authMiddleware, requireRole('company_admin', 'company_user', 's
     }
   }
 
+  await logFromRequest(req, 'create', 'facture', facture.id, { numero: facture.numero, type: facture.type, client: facture.client });
   res.status(201).json(facture);
 });
 
@@ -263,6 +265,7 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     data,
     include: { items: true, quittance: true, marche: { select: { id: true, reference: true, titre: true } } },
   });
+  await logFromRequest(req, 'update', 'facture', id, { numero: updated.numero });
   res.json(updated);
 });
 
@@ -279,6 +282,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     if (f.quittance) await prisma.quittance.delete({ where: { id: f.quittance.id } });
     await prisma.facture.delete({ where: { id } });
+    await logFromRequest(req, 'delete', 'facture', id, { numero: f.numero });
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message || 'Erreur lors de la suppression' });
@@ -303,6 +307,7 @@ router.patch('/:id/statut', authMiddleware, async (req, res) => {
     data: { statut },
     include: { items: true, quittance: true },
   });
+  await logFromRequest(req, 'update', 'facture', id, { statut });
   res.json(updated);
 });
 

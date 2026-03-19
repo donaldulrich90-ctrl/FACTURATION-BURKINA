@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { logFromRequest } from '../services/auditLog.js';
 import { extractMercurialeFromDocx } from '../utils/extractDocx.js';
 
 const router = Router();
@@ -68,6 +69,7 @@ router.post('/copy-from-template', authMiddleware, requireRole('company_admin', 
       console.warn('Copy ignorée:', a.code, e.message);
     }
   }
+  await logFromRequest(req, 'create', 'mercuriale', null, { action: 'copy_from_template', regionId: 'all', copied });
   res.json({ copied, message: `${copied} article(s) copié(s) dans votre base.` });
 });
 
@@ -142,6 +144,7 @@ router.post('/:regionId/import', authMiddleware, requireRole('super_admin', 'com
       console.warn('Import ligne ignorée:', l.code, e.message);
     }
   }
+  await logFromRequest(req, 'create', 'mercuriale', null, { action: 'import', regionId, added });
   res.json({ added });
 });
 
@@ -209,6 +212,7 @@ router.post('/:regionId/replace', authMiddleware, requireRole('super_admin', 'co
       const result = await prisma.mercurialeArticle.createMany({ data: batch });
       inserted += result.count;
     }
+    await logFromRequest(req, 'update', 'mercuriale', null, { action: 'replace', regionId, replaced: inserted });
     res.json({ replaced: inserted });
   } catch (e) {
     console.error('Erreur import mercuriale:', e);
