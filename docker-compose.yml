@@ -11,8 +11,6 @@ services:
       - NODE_ENV=production
       - PORT=3001
       - JWT_SECRET=${JWT_SECRET:-changez-moi-en-production-32-caracteres-min}
-      - GROQ_API_KEY=${GROQ_API_KEY:-}
-      - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
     volumes:
       # Persistance SQLite (bind mount pour pouvoir copier dev.db depuis l'hôte)
       - ./server/prisma:/app/server/prisma
