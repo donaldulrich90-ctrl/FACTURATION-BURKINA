@@ -3,6 +3,8 @@ services:
     build: .
     container_name: fasomarches
     restart: unless-stopped
+    env_file:
+      - ./server/.env
     ports:
       - "3001:3001"
     environment:
